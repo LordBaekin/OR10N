@@ -22,6 +22,12 @@ using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using UnityFlow;
+using NLua;
+using System.Text;
+using System.Diagnostics;
+using MoonSharp.Interpreter;
+using System.Text.RegularExpressions;
+
 
 namespace CoffeeFlow.ViewModel
 {
@@ -126,6 +132,97 @@ namespace CoffeeFlow.ViewModel
             if (t != null)
                 t.Text = s.Key;
         }
+        public string ExportNodesToLua()
+        {
+            StringBuilder luaScript = new StringBuilder();
+
+            foreach (var node in this.Nodes)
+            {
+                if (node is DynamicNode)
+                {
+                    DynamicNode funcNode = (DynamicNode)node;
+                    luaScript.AppendLine($"function {funcNode.NodeName}()");
+                    luaScript.AppendLine(funcNode.NodeBody);
+                    luaScript.AppendLine("end");
+                }
+                // Add additional cases for conditionals and loops
+            }
+
+            return luaScript.ToString();
+        }
+
+        public string ExportNodesToPerl()
+        {
+            StringBuilder perlScript = new StringBuilder();
+
+            foreach (var node in this.Nodes)
+            {
+                if (node is DynamicNode)
+                {
+                    DynamicNode funcNode = (DynamicNode)node;
+                    perlScript.AppendLine($"sub {funcNode.NodeName} {{");
+                    perlScript.AppendLine(funcNode.NodeBody);
+                    perlScript.AppendLine("}");
+                }
+                // Add additional cases for conditionals and loops
+            }
+
+            return perlScript.ToString();
+        }
+
+
+        // Modify the NetworkViewModel class to add nodes dynamically from parsed content.
+        public void AddParsedNode(string nodeName, string nodeType, string body)
+        {
+            NodeViewModel nodeToAdd = null;
+
+            // Create a new node for function, loop, or conditional
+            switch (nodeType)
+            {
+                case "Function":
+                    DynamicNode functionNode = new DynamicNode();
+                    functionNode.NodeName = nodeName;
+                    functionNode.SetBody(body);
+                    nodeToAdd = functionNode;
+                    break;
+
+                case "If":
+                case "Conditional":
+                    DynamicNode conditionalNode = new DynamicNode();
+                    conditionalNode.NodeName = "If statement";
+                    nodeToAdd = conditionalNode;
+                    break;
+
+                case "Loop":
+                    DynamicNode loopNode = new DynamicNode();
+                    loopNode.NodeName = "Loop: " + nodeName;
+                    nodeToAdd = loopNode;
+                    break;
+
+                    // Add additional cases for other control structures as needed
+            }
+
+            if (nodeToAdd != null)
+            {
+                // Randomly position the new node on the grid
+                Point p = GetRandomPosition();
+                nodeToAdd.Margin = new Thickness(p.X, p.Y, 0, 0);
+
+                // Add the node to the grid
+                this.Nodes.Add(nodeToAdd);
+            }
+        }
+
+        // Utility function to determine random node placement
+        private Point GetRandomPosition()
+        {
+            MainWindow main = Application.Current.MainWindow as MainWindow;
+            Random r = new Random();
+            int increment = r.Next(-400, 400);
+            return new Point(main.Width / 2 + increment, main.Height / 2 + increment);
+        }
+
+
 
         public void AddNodeToGrid(NodeWrapper node)
         {
@@ -528,6 +625,124 @@ namespace CoffeeFlow.ViewModel
                         //No need to connect this in to the connection's output so far.
                     }
                 }
+            }
+        }
+
+
+        // Method to parse Lua script and create nodes dynamically
+        public void ImportLuaFile(string filePath)
+        {
+            string luaScript = File.ReadAllText(filePath);
+            var lua = new Script();
+
+            // Load the script, this will not execute the script
+            lua.LoadString(luaScript);
+
+            // Parse functions
+            foreach (var global in lua.Globals.Keys)
+            {
+                DynValue globalValue = lua.Globals.Get(global);
+                if (globalValue.Type == DataType.Function)
+                {
+                    string functionName = global.ToString();
+                    string functionBody = GetLuaFunctionBody(luaScript, functionName);
+                    AddParsedNode(functionName, "Function", functionBody);
+                }
+            }
+
+            // Parse conditionals
+            ParseConditionals(luaScript);
+
+            // Parse loops
+            ParseLoops(luaScript);
+        }
+
+
+
+        // Method to parse conditionals like "if" and "else"
+        private void ParseConditionals(string luaScript)
+        {
+            string ifPattern = @"if\s+\(.*?\)\s+then(.*?)end";
+            var matches = Regex.Matches(luaScript, ifPattern, RegexOptions.Singleline);
+
+            foreach (Match match in matches)
+            {
+                string conditionBody = match.Groups[1].Value;
+                AddParsedNode("Conditional", "If", conditionBody);
+            }
+        }
+
+        // Method to parse loops like "for" and "while"
+        private void ParseLoops(string luaScript)
+        {
+            // For-loop pattern
+            string forPattern = @"for\s+.*?\s+in\s+.*?\s+do(.*?)end";
+            var forMatches = Regex.Matches(luaScript, forPattern, RegexOptions.Singleline);
+
+            foreach (Match match in forMatches)
+            {
+                string loopBody = match.Groups[1].Value;
+                AddParsedNode("Loop", "For", loopBody);
+            }
+
+            // While-loop pattern
+            string whilePattern = @"while\s+.*?\s+do(.*?)end";
+            var whileMatches = Regex.Matches(luaScript, whilePattern, RegexOptions.Singleline);
+
+            foreach (Match match in whileMatches)
+            {
+                string loopBody = match.Groups[1].Value;
+                AddParsedNode("Loop", "While", loopBody);
+            }
+        }
+
+        // Helper function to extract function body from Lua script by name
+        private string GetLuaFunctionBody(string luaScript, string functionName)
+        {
+            // Simple method to find and extract the function body for demonstration purposes
+            string pattern = $@"function\s+{functionName}\s*\(.*?\)(.*?)end";
+            var match = Regex.Match(luaScript, pattern, RegexOptions.Singleline);
+            return match.Success ? match.Groups[1].Value : string.Empty;
+        }
+
+        public void ImportPerlFile(string filePath)
+        {
+            // Define Perl script path and arguments
+            string perlExecutable = @"C:\path\to\perl.exe";  // Path to your Perl executable
+            string scriptPath = @"C:\path\to\parse_perl_script.pl";  // A Perl script that uses PPI to parse another Perl file
+
+            // Create a new process to execute the Perl script
+            Process perlProcess = new Process();
+            perlProcess.StartInfo.FileName = perlExecutable;
+            perlProcess.StartInfo.Arguments = $"\"{scriptPath}\" \"{filePath}\"";  // Pass the file path as an argument
+            perlProcess.StartInfo.RedirectStandardOutput = true;
+            perlProcess.StartInfo.UseShellExecute = false;
+            perlProcess.StartInfo.CreateNoWindow = true;
+
+            // Start the Perl script and capture the output
+            perlProcess.Start();
+            string output = perlProcess.StandardOutput.ReadToEnd();
+            perlProcess.WaitForExit();
+
+            // Process the output in C#
+            ParsePerlSubroutines(output);
+        }
+
+        // Method to parse the Perl script output (example)
+        private void ParsePerlSubroutines(string output)
+        {
+            // Here, you will split and parse the output from the Perl script
+            // Assuming the output format is a list of subroutine names and bodies
+            var subroutines = output.Split(new string[] { "Subroutine:" }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var sub in subroutines)
+            {
+                var lines = sub.Split('\n');
+                var name = lines[0].Trim();  // Subroutine name
+                var body = string.Join("\n", lines.Skip(1));  // Subroutine body
+
+                // Create a new node in the flowchart for each subroutine
+                AddParsedNode(name, "Subroutine", body);
             }
         }
 

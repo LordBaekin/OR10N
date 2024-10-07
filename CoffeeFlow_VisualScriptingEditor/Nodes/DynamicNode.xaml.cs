@@ -131,6 +131,7 @@ namespace CoffeeFlow.Nodes
 
         }
 
+      
         public void AddArgument(string type, string argumentName, bool isExisting, int connectedToNodeID = 0, object argumentValue = null)
         {
             bool isUnknown = true;
@@ -410,6 +411,14 @@ namespace CoffeeFlow.Nodes
                 }
             }
             return null;
+        }
+
+        public string NodeBody { get; set; }
+
+        public void SetBody(string body)
+        {
+            this.NodeBody = body;
+            OnPropertyChanged(nameof(NodeBody));
         }
     }
 }
