@@ -144,6 +144,21 @@ namespace CoffeeFlow.ViewModel
                 p = new Point(p.X + increment, p.Y + increment); 
             }
 
+            if (node.TypeOfNode == NodeType.ActionNode)
+            {
+                ActionNode n = new ActionNode("SomeAction", "Some dialogue");
+                n.Margin = new Thickness(p.X, p.Y, 0, 0);
+                nodeToAdd = n;
+            }
+
+            if (node.TypeOfNode == NodeType.EventNode)
+            {
+                EventNode n = new EventNode("SomeEvent");
+                n.Margin = new Thickness(p.X, p.Y, 0, 0);
+                nodeToAdd = n;
+            }
+
+
 
             if (node.TypeOfNode == NodeType.RootNode)
             {

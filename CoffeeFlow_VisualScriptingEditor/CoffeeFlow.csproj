@@ -130,6 +130,9 @@
     <Compile Include="Nodes\ConditionNode.xaml.cs">
       <DependentUpon>ConditionNode.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Nodes\ActionNode.xaml.cs">
+      <DependentUpon>ActionNode.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ValueConverters\EnabledToVisibilityConverter.cs" />
     <Compile Include="ViewModel\LocalizationData.cs" />
     <Compile Include="ViewModel\NodeViewModel.cs" />
@@ -182,6 +185,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Nodes\ConditionNode.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Nodes\ActionNode.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
