@@ -248,6 +248,8 @@ VerticalAlignment="Center"/>
             </MenuItem>
 
             <MenuItem Header="_Edit" Foreground="#FFC7C6C6" Background="#00191010">
+                <MenuItem Header="Undo" Command="{Binding UndoCommand}" />
+                <MenuItem Header="Redo" Command="{Binding RedoCommand}" />
                 <MenuItem Header="Increase line strength" Background="#FF272323" Foreground="#FF999797" Command="{Binding Network.IncreaseBezierStrengthCommand}"></MenuItem>
                 <MenuItem Header="Decrease line strength" Background="#FF272323" Foreground="#FF999797" Command="{Binding Network.DecreaseBezierStrengthCommand}"></MenuItem>
                 <MenuItem Header="Reset line strength" Background="#FF272323" Foreground="#FF999797" Command="{Binding Network.ResetBezierStrengthCommand}"></MenuItem>

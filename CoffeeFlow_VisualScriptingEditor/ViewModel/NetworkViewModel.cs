@@ -27,6 +27,7 @@ using System.Text;
 using System.Diagnostics;
 using MoonSharp.Interpreter;
 using System.Text.RegularExpressions;
+using GalaSoft.MvvmLight.Ioc;
 
 
 namespace CoffeeFlow.ViewModel
@@ -43,12 +44,34 @@ namespace CoffeeFlow.ViewModel
         public List<NodeViewModel> AddedNodesOrder;
         public List<NodeViewModel> RemovedNodesOrder;
         public int UndoCount = 0;
+        private Stack<UndoableAction> undoStack = new Stack<UndoableAction>();
+        private Stack<UndoableAction> redoStack = new Stack<UndoableAction>();
+
+        // RelayCommands for Undo/Redo
+        public RelayCommand UndoCommand { get; }
+        public RelayCommand RedoCommand { get; }
+
+        public class UndoableAction
+        {
+            public Action DoAction { get; }
+            public Action UndoAction { get; }
+
+            public UndoableAction(Action doAction, Action undoAction)
+            {
+                DoAction = doAction;
+                UndoAction = undoAction;
+            }
+
+            public void Execute() => DoAction();
+            public void Undo() => UndoAction();
+        }
 
         private RelayCommand<NodeWrapper> _addNodeToGridCommand;
         public RelayCommand<NodeWrapper> AddNodeToGridCommand
         {
             get { return _addNodeToGridCommand ?? (_addNodeToGridCommand = new RelayCommand<NodeWrapper>(AddNodeToGrid)); }
         }
+
 
         private RelayCommand<LocalizationItem> _selectLocalizedStringCommand;
         public RelayCommand<LocalizationItem> SelectLocalizedStringCommand
@@ -222,6 +245,53 @@ namespace CoffeeFlow.ViewModel
             return new Point(main.Width / 2 + increment, main.Height / 2 + increment);
         }
 
+        private void AddNode_Click(object sender, RoutedEventArgs e)
+        {
+            // Fetch the NetworkViewModel from the DataContext
+            NetworkViewModel network = SimpleIoc.Default.GetInstance<NetworkViewModel>();
+
+            // Create a new NodeWrapper (You can customize this based on your needs)
+            NodeWrapper newNode = new NodeWrapper
+            {
+                NodeName = "New Node",  // Assign the name of the node
+                TypeOfNode = NodeType.MethodNode, // Specify the type of node (adjust as necessary)
+                Arguments = new List<Argument>(), // If arguments are required
+                BaseAssemblyType = "System.String", // Example base assembly type
+                CallingClass = "MyClass"  // Replace with the appropriate calling class name
+            };
+
+            // Use the existing AddNodeToGrid method to add the node to the grid
+            network.AddNodeToGrid(newNode);  // Calls the existing logic to place the node
+
+            // Optionally, show a confirmation message
+            MessageBox.Show("Node added to the grid!");
+        }
+
+        private void DeleteNode_Click(object sender, RoutedEventArgs e)
+        {
+            // Fetch the network view model from the IoC container or DataContext
+            NetworkViewModel network = SimpleIoc.Default.GetInstance<NetworkViewModel>();
+
+            // Find the node that is selected (where IsSelected == true)
+            var selectedNode = network.Nodes.FirstOrDefault(node => node.IsSelected);
+
+            // Check if a node is selected for deletion
+            if (selectedNode != null)
+            {
+                // Call the method to remove the selected node
+                network.RemoveNode(selectedNode);
+
+                // Provide user feedback
+                MessageBox.Show($"Node '{selectedNode.NodeName}' deleted!");
+            }
+            else
+            {
+                // No node selected for deletion
+                MessageBox.Show("No node selected to delete!");
+            }
+        }
+
+
 
 
         public void AddNodeToGrid(NodeWrapper node)
@@ -238,7 +308,7 @@ namespace CoffeeFlow.ViewModel
             {
                 Random r = new Random();
                 int increment = r.Next(-400, 400);
-                p = new Point(p.X + increment, p.Y + increment); 
+                p = new Point(p.X + increment, p.Y + increment);
             }
 
             if (node.TypeOfNode == NodeType.ActionNode)
@@ -276,7 +346,7 @@ namespace CoffeeFlow.ViewModel
             }
 
 
-            if(node.TypeOfNode == NodeType.MethodNode)
+            if (node.TypeOfNode == NodeType.MethodNode)
             {
                 DynamicNode n = new DynamicNode();
                 n.NodeName = node.NodeName;
@@ -302,7 +372,7 @@ namespace CoffeeFlow.ViewModel
                 nodeToAdd = n;
             }
 
-            if(nodeToAdd != null)
+            if (nodeToAdd != null)
             {
                 this.Nodes.Add(nodeToAdd);
                 MainViewModel.Instance.LogStatus("Added node " + nodeToAdd.NodeName + " to grid");
@@ -346,7 +416,7 @@ namespace CoffeeFlow.ViewModel
         public void SaveNodes()
         {
             Microsoft.Win32.SaveFileDialog saveFileDialog1 = new Microsoft.Win32.SaveFileDialog();
-    
+
             // Set filter options and filter index.
             saveFileDialog1.Filter = "XML Files (.xml)|*.xml|All Files (*.*)|*.*";
             saveFileDialog1.FilterIndex = 1;
@@ -360,7 +430,7 @@ namespace CoffeeFlow.ViewModel
             {
                 path = saveFileDialog1.FileName;
                 Stream myStream = saveFileDialog1.OpenFile();
-                if (myStream  != null)
+                if (myStream != null)
                 {
                     #region Nodes
                     XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
@@ -421,7 +491,7 @@ namespace CoffeeFlow.ViewModel
                             varSerial.NodeName = varNode.NodeName;
                             varSerial.TypeString = varNode.Type;
                             varSerial.NodeType = varNode.NodeType;
-                            
+
                             varSerial.MarginX = varNode.Margin.Left + varNode.Transform.X;
                             varSerial.MarginY = varNode.Margin.Top + varNode.Transform.Y;
                             varSerial.ID = varNode.ID;
@@ -562,12 +632,12 @@ namespace CoffeeFlow.ViewModel
                     Connector.ConnectPins(rootNode.OutputConnector, connectedTo);
                 }
 
-                if(node is ConditionNode)
+                if (node is ConditionNode)
                 {
                     ConditionNode conNode = node as ConditionNode;
 
                     //bool value Input
-                    if(conNode.boolInput.ConnectionNodeID > 0)
+                    if (conNode.boolInput.ConnectionNodeID > 0)
                     {
                         //we're connected to a parameter
                         Connector connectedToVar = GetOutConnectorBasedOnNode(conNode.boolInput.ConnectionNodeID); //variable
@@ -596,18 +666,18 @@ namespace CoffeeFlow.ViewModel
                         Connector.ConnectPins(conNode.OutExecutionConnectorFalse, connectedTo);
                     }
                 }
-                
+
                 if (node is DynamicNode)
                 {
                     //Connect output
                     DynamicNode dynNode = node as DynamicNode;
-                    
+
                     //Connect parameters
                     for (int i = 0; i < dynNode.ArgumentCache.Count(); i++)
                     {
                         Argument arg = dynNode.ArgumentCache.ElementAt(i);
 
-                        if(arg.ArgIsExistingVariable)
+                        if (arg.ArgIsExistingVariable)
                         {
                             Connector conID = dynNode.GetConnectorAtIndex(i);
                             int connectedToVar = arg.ArgumentConnectedToNodeID;
@@ -617,7 +687,7 @@ namespace CoffeeFlow.ViewModel
                         }
                     }
 
-                    if(dynNode.OutExecutionConnector.ConnectionNodeID > 0)
+                    if (dynNode.OutExecutionConnector.ConnectionNodeID > 0)
                     {
                         //Connect this output to the connection's input
                         Connector connectedTo = GetInConnectorBasedOnNode(dynNode.OutExecutionConnector.ConnectionNodeID);
@@ -768,18 +838,7 @@ namespace CoffeeFlow.ViewModel
         }
 
         private ObservableCollection<NodeViewModel> nodes = null;
-        public ObservableCollection<NodeViewModel> Nodes
-        {
-            get
-            {
-                if (nodes == null)
-                {
-                    nodes = new ObservableCollection<NodeViewModel>();
-                }
-
-                return nodes;
-            }
-        }
+        public ObservableCollection<NodeViewModel> Nodes { get; set; }
 
         public static ObservableCollection<NodeViewModel> SelectedNodes { get; set; }
 
@@ -795,8 +854,8 @@ namespace CoffeeFlow.ViewModel
         public Connector GetInConnectorBasedOnNode(int nodeID)
         {
             NodeViewModel node = GetNodeByID(nodeID);
-            
-            if(node == null)
+
+            if (node == null)
                 return null;
 
             if (node is DynamicNode)
@@ -848,7 +907,7 @@ namespace CoffeeFlow.ViewModel
                        where n.ID == nodeID
                        select n;
 
-            if(node.Count() == 1)
+            if (node.Count() == 1)
             {
                 return node.First();
             }
@@ -860,6 +919,69 @@ namespace CoffeeFlow.ViewModel
         {
             AddedNodesOrder = new List<NodeViewModel>();
             RemovedNodesOrder = new List<NodeViewModel>();
+            Nodes = new ObservableCollection<NodeViewModel>();
+            UndoCommand = new RelayCommand(Undo, CanUndo);
+            RedoCommand = new RelayCommand(Redo, CanRedo);
+
+        }
+        // Add a new undoable action to the stack
+        public void AddUndoableAction(UndoableAction action)
+        {
+            undoStack.Push(action);
+            redoStack.Clear();  // Clear redo stack when new action is added
+            RefreshCommandStates();
+        }
+
+        // Perform Undo
+        private void Undo()
+        {
+            if (undoStack.Any())
+            {
+                var action = undoStack.Pop();
+                action.Undo();
+                redoStack.Push(action);
+                RefreshCommandStates();
+            }
+        }
+
+        // Perform Redo
+        private void Redo()
+        {
+            if (redoStack.Any())
+            {
+                var action = redoStack.Pop();
+                action.Execute();
+                undoStack.Push(action);
+                RefreshCommandStates();
+            }
+        }
+
+        // Enable/Disable Undo button
+        private bool CanUndo() => undoStack.Any();
+
+        // Enable/Disable Redo button
+        private bool CanRedo() => redoStack.Any();
+
+        private void RefreshCommandStates()
+        {
+            UndoCommand.RaiseCanExecuteChanged();
+            RedoCommand.RaiseCanExecuteChanged();
+        }
+        public void RemoveNode(NodeViewModel node)
+        {
+            if (node != null && Nodes.Contains(node))
+            {
+                Nodes.Remove(node);  // Remove the node from the collection
+                MainViewModel.Instance.LogStatus($"Node {node.NodeName} removed from the grid.");
+            }
+            else
+            {
+                MainViewModel.Instance.LogStatus("Failed to remove node - node not found.");
+            }
+
         }
     }
 }
+
+
+

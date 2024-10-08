@@ -168,15 +168,14 @@ namespace CoffeeFlow.Base
 
             TransformGroup group = new TransformGroup();
             group.Children.Add(scaleTransform);
-            group.Children.Add(transform); 
+            group.Children.Add(transform);
 
             moveThisElement.RenderTransform = group;
-            
+
             this.Transform = transform;
 
             System.Windows.Point originalPoint = new System.Windows.Point(0, 0), currentPoint;
-            
-            //
+
             movedByElement.MouseLeftButtonDown += (sender, b) =>
             {
                 source = (UIElement)sender;
@@ -185,15 +184,18 @@ namespace CoffeeFlow.Base
 
                 IsNodeDragging = true;
                 originalPoint = ((System.Windows.Input.MouseEventArgs)b).GetPosition(moveThisElement);
+
+                // Logic to mark the node as selected
+                NodeViewModel.Selected = this;  // Set this node as the selected node
+                OnPropertyChanged(nameof(IsSelected));  // Notify that the IsSelected property has changed
             };
 
             movedByElement.MouseLeftButtonUp += (a, b) =>
-                {
-                    Mouse.Capture(null);
-                    captured = false;
-
-                    IsNodeDragging = false;
-                };
+            {
+                Mouse.Capture(null);
+                captured = false;
+                IsNodeDragging = false;
+            };
 
             movedByElement.MouseMove += (a, b) =>
             {
@@ -202,13 +204,12 @@ namespace CoffeeFlow.Base
                 if (captured)
                 {
                     currentPoint = ((System.Windows.Input.MouseEventArgs)b).GetPosition(moveThisElement);
-
                     transform.X += currentPoint.X - originalPoint.X;
                     transform.Y += currentPoint.Y - originalPoint.Y;
                 }
             };
- 
         }
+
 
         public void DisconnectAllConnectors()
         {
