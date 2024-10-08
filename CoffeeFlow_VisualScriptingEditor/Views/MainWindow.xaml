@@ -4,6 +4,15 @@
         xmlns:base="clr-namespace:CoffeeFlow.Base"
         xmlns:views="clr-namespace:CoffeeFlow.Views"
         Title="CoffeeFlow - Visual Flow Scripting Tool" Height="768" Width="1368" DataContext="{Binding Source={StaticResource Locator}}" Icon="/CoffeeFlow;component/icon.ico">
+
+    <Window.ContextMenu>
+        <ContextMenu x:Name="MainContextMenu">
+            <MenuItem Header="Add Node" Click="AddNode_Click"/>
+            <MenuItem Header="Delete Node" Click="DeleteNode_Click"/>
+            <MenuItem Header="Reset View" Click="ResetView_Click"/>
+        </ContextMenu>
+    </Window.ContextMenu>
+
     <Window.Resources>
         <Style  TargetType="{x:Type MenuItem}">
             <Setter Property="Foreground" Value="#4D4D4D" />
@@ -15,6 +24,8 @@
 Background="{TemplateBinding Background}" 
 BorderBrush="{TemplateBinding BorderBrush}" 
 BorderThickness="{TemplateBinding BorderThickness}">
+
+
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition x:Name="Col0" MinWidth="17" Width="Auto" SharedSizeGroup="MenuItemIconColumnGroup"/>
@@ -161,7 +172,7 @@ VerticalAlignment="Center"/>
 
         <Grid Grid.Row="1" Name="GridColumn1" Background="#4C000000">
             <views:NodeListWindow x:Name="lstAvailableNodes2" Visibility="Visible" IsCenter="False" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,00,0,0" Height="604" Loaded="lstAvailableNodes2_Loaded"  />
-  
+
             <Grid  Height="Auto" HorizontalAlignment="Left" Margin="10 0 0 0" VerticalAlignment="Bottom" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="30"></RowDefinition>
@@ -209,13 +220,13 @@ VerticalAlignment="Center"/>
                 <MenuItem Header="Open Lua/Perl File" Background="#FF272323" Foreground="#FF999797" Command="{Binding OpenLuaPerlFileCommand}" />
                 <MenuItem Header="Save as Lua" Background="#FF272323" Foreground="#FF999797" Command="{Binding SaveAsLuaCommand}" />
                 <MenuItem Header="Save as Perl" Background="#FF272323" Foreground="#FF999797" Command="{Binding SaveAsPerlCommand}" />
-                
+
                 <MenuItem Header="_Exit" Command="{Binding ExitCommand}" />
-                
+
                 <MenuItem Header="_Close" Background="#FF272323" Foreground="#FF999797" Command="{Binding CloseAppCommand,
                                         RelativeSource={RelativeSource FindAncestor, 
                                         AncestorType={x:Type Window}}}"/>
-                
+
             </MenuItem>
 
             <MenuItem Header="_View" Foreground="#FFC7C6C6" >
@@ -238,4 +249,5 @@ VerticalAlignment="Center"/>
         <Button Style="{StaticResource DarkButton}"  Content="Save!" FontSize="10" Width="100" Height="20" HorizontalAlignment="Right" Margin="5 0" VerticalAlignment="Center" Grid.Column="2" Command="{Binding Network.SaveNodesCommand}" Grid.Row="2"/>
         <TextBlock Text="OR10N" FontSize="28" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,15,13" Foreground="Gray" Grid.Column="1" Grid.Row="1"/>
     </Grid>
+
 </Window>

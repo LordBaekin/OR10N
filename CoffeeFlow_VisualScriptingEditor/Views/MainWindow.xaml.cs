@@ -50,10 +50,27 @@ namespace CoffeeFlow
 
         private RelayCommand _showAvailableNodesCommand;
 
-        public RelayCommand ShowNodeListCommand
+        // Event handler for "Add Node" menu item
+        private void AddNode_Click(object sender, RoutedEventArgs e)
         {
-            get { return _showAvailableNodesCommand ?? (_showAvailableNodesCommand = new RelayCommand(ShowNodeList)); }
+            // Logic to add a node
+            MessageBox.Show("Add Node clicked");
         }
+
+        // Event handler for "Delete Node" menu item
+        private void DeleteNode_Click(object sender, RoutedEventArgs e)
+        {
+            // Logic to delete a node
+            MessageBox.Show("Delete Node clicked");
+        }
+
+        // Event handler for "Reset View" menu item
+        private void ResetView_Click(object sender, RoutedEventArgs e)
+        {
+            // Logic to reset the main window view
+            MessageBox.Show("Reset View clicked");
+        }
+
 
         public bool IsNodePopupVisible = false;
 
@@ -86,10 +103,7 @@ namespace CoffeeFlow
             IsNodePopupVisible = true;
         }
 
-        public void ShowNodeList()
-        {
-            ShowAtMousePosition(lstAvailableNodes);
-        }
+       
 
         public void HideNodeList()
         {
