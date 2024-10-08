@@ -51,10 +51,14 @@ namespace CoffeeFlow
         private RelayCommand _showAvailableNodesCommand;
 
         // Event handler for "Add Node" menu item
-        private void AddNode_Click(object sender, RoutedEventArgs e)
+        private void AddNodeType_Click(object sender, RoutedEventArgs e)
         {
-            // Logic to add a node
-            MessageBox.Show("Add Node clicked");
+            if (sender is MenuItem menuItem)
+            {
+                string nodeType = menuItem.Header.ToString();
+                // Logic to add a node of the selected type
+                MessageBox.Show($"Add Node of type {nodeType} clicked");
+            }
         }
 
         // Event handler for "Delete Node" menu item
@@ -70,7 +74,6 @@ namespace CoffeeFlow
             // Logic to reset the main window view
             MessageBox.Show("Reset View clicked");
         }
-
 
         public bool IsNodePopupVisible = false;
 
@@ -103,8 +106,6 @@ namespace CoffeeFlow
             IsNodePopupVisible = true;
         }
 
-       
-
         public void HideNodeList()
         {
             lstAvailableNodes.Visibility = Visibility.Collapsed;
@@ -125,12 +126,49 @@ namespace CoffeeFlow
 
             ToggleSidebar(); //turn sidebar off
             HideNodeList();
-         
-            /*
-            InfoWindow info = new InfoWindow();
-            info.ShowDialog();
 
-            */
+            // Populate the "Add Node" submenu with node types
+            PopulateAddNodeSubMenu();
+        }
+
+        private void PopulateAddNodeSubMenu()
+        {
+            var nodeTypes = new List<string>();
+
+            // Get all types in the Nodes namespace
+            var nodeTypeList = typeof(MainWindow).Assembly.GetTypes()
+                .Where(t => t.Namespace == "CoffeeFlow.Nodes" && t.IsClass)
+                .Select(t => t.Name)
+                .ToList();
+
+            nodeTypes.AddRange(nodeTypeList);
+
+            var addNodeMenuItem = MainContextMenu.Items.OfType<MenuItem>().FirstOrDefault(item => item.Header.ToString() == "Add Node");
+
+            if (addNodeMenuItem != null)
+            {
+                if (addNodeMenuItem.ItemsSource is IList<MenuItem> itemsSource)
+                {
+                    itemsSource.Clear();
+                    foreach (var nodeType in nodeTypes)
+                    {
+                        var menuItem = new MenuItem { Header = nodeType };
+                        menuItem.Click += AddNodeType_Click;
+                        itemsSource.Add(menuItem);
+                    }
+                }
+                else
+                {
+                    var newItemsSource = new List<MenuItem>();
+                    foreach (var nodeType in nodeTypes)
+                    {
+                        var menuItem = new MenuItem { Header = nodeType };
+                        menuItem.Click += AddNodeType_Click;
+                        newItemsSource.Add(menuItem);
+                    }
+                    addNodeMenuItem.ItemsSource = newItemsSource;
+                }
+            }
         }
 
         private void lstAvailableNodes2_Loaded(object sender, RoutedEventArgs e)

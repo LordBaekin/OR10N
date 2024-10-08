@@ -7,7 +7,18 @@
 
     <Window.ContextMenu>
         <ContextMenu x:Name="MainContextMenu">
-            <MenuItem Header="Add Node" Click="AddNode_Click"/>
+            <MenuItem Header="Add Node">
+                <MenuItem.ItemsSource>
+                    <CompositeCollection>
+                        <MenuItem Header="Loading..." />
+                    </CompositeCollection>
+                </MenuItem.ItemsSource>
+                <MenuItem.ItemTemplate>
+                    <DataTemplate>
+                        <MenuItem Header="{Binding}" Click="AddNodeType_Click"/>
+                    </DataTemplate>
+                </MenuItem.ItemTemplate>
+            </MenuItem>
             <MenuItem Header="Delete Node" Click="DeleteNode_Click"/>
             <MenuItem Header="Reset View" Click="ResetView_Click"/>
         </ContextMenu>
