@@ -18,6 +18,7 @@ using GalaSoft.MvvmLight.CommandWpf;
 using System.Xml.Serialization;
 using UnityFlow;
 using CoffeeFlow.Views;
+using CoffeeFlow.ViewModel;
 
 namespace CoffeeFlow.Nodes
 {
@@ -63,7 +64,7 @@ namespace CoffeeFlow.Nodes
         //time-saving hack but it works
         public static TextBox TextBoxToModify;
 
-        public DynamicNode()
+        public DynamicNode(MainViewModel mainViewModel) : base(mainViewModel)
         {
             InitializeComponent();
 

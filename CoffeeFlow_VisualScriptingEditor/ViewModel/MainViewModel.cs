@@ -20,11 +20,18 @@ using Roslyn.Compilers.CSharp;
 using UnityFlow;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
+using static CoffeeFlow.ViewModel.NetworkViewModel;
 
 namespace CoffeeFlow.ViewModel
 {
     public class MainViewModel : ViewModelBase
     {
+        private Stack<UndoableAction> undoStack = new Stack<UndoableAction>();
+        private Stack<UndoableAction> redoStack = new Stack<UndoableAction>();
+
+        public RelayCommand UndoCommand { get; }
+        public RelayCommand RedoCommand { get; }
+
         private static MainViewModel instance;
         public static MainViewModel Instance
         {
@@ -576,14 +583,17 @@ namespace CoffeeFlow.ViewModel
 
         public MainViewModel()
         {
+            // Ensure only one instance of MainViewModel exists
             if (instance != null && instance != this)
                 LogStatus("There's already a Game Manager in the scene, destroying this one.");
             else
                 instance = this;
 
+            // Initialize DebugList
             DebugList = new ObservableCollection<string>();
             LogStatus("MainViewModel initialized.");
 
+            // Example node wrappers
             NodeWrapper r = new NodeWrapper
             {
                 TypeOfNode = NodeType.RootNode,
@@ -603,11 +613,53 @@ namespace CoffeeFlow.ViewModel
                 IsDeletable = false
             };
 
+            // Add nodes to Triggers collection
             Triggers.Add(r);
             Triggers.Add(r2);
             Triggers.Add(con);
+
+            // Initialize Undo/Redo commands after other setup
+            UndoCommand = new RelayCommand(Undo, CanUndo);
+            RedoCommand = new RelayCommand(Redo, CanRedo);
+        }
+        public void AddUndoableAction(UndoableAction action)
+        {
+            undoStack.Push(action);
+            redoStack.Clear();  // Clear redo stack when a new action is added
+            RefreshCommandStates();
         }
 
+        private void Undo()
+        {
+            if (undoStack.Any())
+            {
+                var action = undoStack.Pop();
+                action.Undo();
+                redoStack.Push(action);
+                RefreshCommandStates();
+            }
+        }
+
+        private void Redo()
+        {
+            if (redoStack.Any())
+            {
+                var action = redoStack.Pop();
+                action.Execute();
+                undoStack.Push(action);
+                RefreshCommandStates();
+            }
+        }
+
+        private bool CanUndo() => undoStack.Any();
+        private bool CanRedo() => redoStack.Any();
+
+        private void RefreshCommandStates()
+        {
+            UndoCommand.RaiseCanExecuteChanged();
+            RedoCommand.RaiseCanExecuteChanged();
+        }
+    
         public void LogStatus(string status, bool showInStatusLabel = false)
         {
             DebugList.Add(status);

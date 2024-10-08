@@ -199,11 +199,14 @@ namespace CoffeeFlow.ViewModel
         {
             NodeViewModel nodeToAdd = null;
 
+            // Get MainViewModel instance (you can adjust this to how you're managing the MainViewModel)
+            MainViewModel mainViewModel = MainViewModel.Instance;
+
             // Create a new node for function, loop, or conditional
             switch (nodeType)
             {
                 case "Function":
-                    DynamicNode functionNode = new DynamicNode();
+                    DynamicNode functionNode = new DynamicNode(mainViewModel); // Pass MainViewModel
                     functionNode.NodeName = nodeName;
                     functionNode.SetBody(body);
                     nodeToAdd = functionNode;
@@ -211,13 +214,13 @@ namespace CoffeeFlow.ViewModel
 
                 case "If":
                 case "Conditional":
-                    DynamicNode conditionalNode = new DynamicNode();
+                    DynamicNode conditionalNode = new DynamicNode(mainViewModel); // Pass MainViewModel
                     conditionalNode.NodeName = "If statement";
                     nodeToAdd = conditionalNode;
                     break;
 
                 case "Loop":
-                    DynamicNode loopNode = new DynamicNode();
+                    DynamicNode loopNode = new DynamicNode(mainViewModel); // Pass MainViewModel
                     loopNode.NodeName = "Loop: " + nodeName;
                     nodeToAdd = loopNode;
                     break;
@@ -313,14 +316,18 @@ namespace CoffeeFlow.ViewModel
 
             if (node.TypeOfNode == NodeType.ActionNode)
             {
-                ActionNode n = new ActionNode("SomeAction", "Some dialogue");
+                MainViewModel mainViewModel = MainViewModel.Instance;
+
+                ActionNode n = new ActionNode(mainViewModel, "SomeAction", "Some dialogue"); // Pass MainViewModel as the first argument
                 n.Margin = new Thickness(p.X, p.Y, 0, 0);
                 nodeToAdd = n;
             }
 
             if (node.TypeOfNode == NodeType.EventNode)
             {
-                EventNode n = new EventNode("SomeEvent");
+                MainViewModel mainViewModel = MainViewModel.Instance;
+
+                EventNode n = new EventNode(mainViewModel, "SomeEvent");
                 n.Margin = new Thickness(p.X, p.Y, 0, 0);
                 nodeToAdd = n;
             }
@@ -329,7 +336,7 @@ namespace CoffeeFlow.ViewModel
 
             if (node.TypeOfNode == NodeType.RootNode)
             {
-                RootNode n = new RootNode();
+                RootNode n = new RootNode(MainViewModel.Instance);
                 n.NodeName = node.NodeName;
 
                 n.Margin = new Thickness(p.X, p.Y, 0, 0);
@@ -338,17 +345,17 @@ namespace CoffeeFlow.ViewModel
 
             if (node.TypeOfNode == NodeType.ConditionNode)
             {
-                ConditionNode n = new ConditionNode();
+                // Ensure 'this' refers to the current NetworkViewModel instance that contains the MainViewModel
+                ConditionNode n = new ConditionNode(MainViewModel.Instance);  // Pass the MainViewModel instance
                 n.NodeName = node.NodeName;
 
                 n.Margin = new Thickness(p.X, p.Y, 0, 0);
                 nodeToAdd = n;
             }
 
-
             if (node.TypeOfNode == NodeType.MethodNode)
             {
-                DynamicNode n = new DynamicNode();
+                DynamicNode n = new DynamicNode(MainViewModel.Instance);
                 n.NodeName = node.NodeName;
 
                 foreach (var arg in node.Arguments)
@@ -363,7 +370,7 @@ namespace CoffeeFlow.ViewModel
 
             if (node.TypeOfNode == NodeType.VariableNode)
             {
-                VariableNode n = new VariableNode();
+                VariableNode n = new VariableNode(MainViewModel.Instance);
                 n.NodeName = node.NodeName;
                 n.Type = node.BaseAssemblyType;
 
@@ -579,7 +586,7 @@ namespace CoffeeFlow.ViewModel
                     {
                         SerializeableRootNode rootSerialized = serializeableNodeViewModel as SerializeableRootNode;
 
-                        RootNode newNode = new RootNode();
+                        RootNode newNode = new RootNode(MainViewModel.Instance);
                         newNode.Populate(rootSerialized);
 
                         Nodes.Add(newNode);
@@ -589,7 +596,7 @@ namespace CoffeeFlow.ViewModel
                     {
                         SerializeableVariableNode variableSerialized = serializeableNodeViewModel as SerializeableVariableNode;
 
-                        VariableNode newNode = new VariableNode();
+                        VariableNode newNode = new VariableNode(MainViewModel.Instance);
                         newNode.Populate(variableSerialized);
 
                         Nodes.Add(newNode);
@@ -599,7 +606,7 @@ namespace CoffeeFlow.ViewModel
                     {
                         SerializeableDynamicNode dynamicSerialized = serializeableNodeViewModel as SerializeableDynamicNode;
 
-                        DynamicNode newNode = new DynamicNode();
+                        DynamicNode newNode = new DynamicNode(MainViewModel.Instance);
                         newNode.Populate(dynamicSerialized);
 
                         Nodes.Add(newNode);
@@ -609,7 +616,7 @@ namespace CoffeeFlow.ViewModel
                     {
                         SerializeableConditionNode conSerialized = serializeableNodeViewModel as SerializeableConditionNode;
 
-                        ConditionNode newNode = new ConditionNode();
+                        ConditionNode newNode = new ConditionNode(MainViewModel.Instance);
                         newNode.Populate(conSerialized);
 
                         Nodes.Add(newNode);
@@ -924,49 +931,49 @@ namespace CoffeeFlow.ViewModel
             RedoCommand = new RelayCommand(Redo, CanRedo);
 
         }
-        // Add a new undoable action to the stack
-        public void AddUndoableAction(UndoableAction action)
+         // Add a new undoable action to the stack
+    public void AddUndoableAction(UndoableAction action)
+    {
+        undoStack.Push(action);
+        redoStack.Clear();  // Clear redo stack when new action is added
+        RefreshCommandStates();
+    }
+
+    // Perform Undo
+    private void Undo()
+    {
+        if (undoStack.Any())
         {
-            undoStack.Push(action);
-            redoStack.Clear();  // Clear redo stack when new action is added
+            var action = undoStack.Pop();
+            action.Undo();
+            redoStack.Push(action);
             RefreshCommandStates();
         }
+    }
 
-        // Perform Undo
-        private void Undo()
+    // Perform Redo
+    private void Redo()
+    {
+        if (redoStack.Any())
         {
-            if (undoStack.Any())
-            {
-                var action = undoStack.Pop();
-                action.Undo();
-                redoStack.Push(action);
-                RefreshCommandStates();
-            }
+            var action = redoStack.Pop();
+            action.Execute();
+            undoStack.Push(action);
+            RefreshCommandStates();
         }
+    }
 
-        // Perform Redo
-        private void Redo()
-        {
-            if (redoStack.Any())
-            {
-                var action = redoStack.Pop();
-                action.Execute();
-                undoStack.Push(action);
-                RefreshCommandStates();
-            }
-        }
+    // Enable/Disable Undo button
+    private bool CanUndo() => undoStack.Any();
 
-        // Enable/Disable Undo button
-        private bool CanUndo() => undoStack.Any();
+    // Enable/Disable Redo button
+    private bool CanRedo() => redoStack.Any();
 
-        // Enable/Disable Redo button
-        private bool CanRedo() => redoStack.Any();
-
-        private void RefreshCommandStates()
-        {
-            UndoCommand.RaiseCanExecuteChanged();
-            RedoCommand.RaiseCanExecuteChanged();
-        }
+    private void RefreshCommandStates()
+    {
+        UndoCommand.RaiseCanExecuteChanged();
+        RedoCommand.RaiseCanExecuteChanged();
+    }
         public void RemoveNode(NodeViewModel node)
         {
             if (node != null && Nodes.Contains(node))

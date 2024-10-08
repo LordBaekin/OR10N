@@ -17,6 +17,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using CoffeeFlow.Base;
+using CoffeeFlow.ViewModel;
 using UnityFlow;
 
 namespace CoffeeFlow.Nodes
@@ -48,7 +49,7 @@ namespace CoffeeFlow.Nodes
             get { return TypeValue != null; }
         }
 
-        public VariableNode()
+        public VariableNode(MainViewModel mainViewModel) : base(mainViewModel)
         {
             InitializeComponent();
 

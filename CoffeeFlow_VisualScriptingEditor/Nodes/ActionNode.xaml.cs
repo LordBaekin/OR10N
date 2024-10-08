@@ -1,4 +1,5 @@
 ﻿using CoffeeFlow.Base;
+using CoffeeFlow.ViewModel;
 
 namespace CoffeeFlow.Nodes
 {
@@ -7,7 +8,9 @@ namespace CoffeeFlow.Nodes
         public string Action { get; set; }
         public string DialogueText { get; set; }
 
-        public ActionNode(string action, string dialogueText = "")
+        // Modify constructor to accept a MainViewModel and pass it to the base class
+        public ActionNode(MainViewModel mainViewModel, string action, string dialogueText = "")
+            : base(mainViewModel)  // Pass MainViewModel to base class
         {
             Action = action;
             DialogueText = dialogueText;

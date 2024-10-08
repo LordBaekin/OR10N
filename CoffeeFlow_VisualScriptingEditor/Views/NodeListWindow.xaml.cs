@@ -136,7 +136,13 @@ namespace CoffeeFlow.Views
 
         public void AddRootNode(string name)
         {
-            RootNode root = new RootNode();
+            // Assuming you can access MainViewModel via MainViewModel.Instance
+            MainViewModel mainViewModel = MainViewModel.Instance;
+
+            // Pass the MainViewModel to the RootNode constructor
+            RootNode root = new RootNode(mainViewModel);
+
+            // Set the root node's name
             root.Name = name;
         }
 

@@ -1,4 +1,5 @@
 ﻿using CoffeeFlow.Base;
+using CoffeeFlow.ViewModel;
 
 namespace CoffeeFlow.Nodes
 {
@@ -6,7 +7,9 @@ namespace CoffeeFlow.Nodes
     {
         public string EventType { get; set; }
 
-        public EventNode(string eventType)
+        // Modify constructor to accept MainViewModel and pass it to the base class
+        public EventNode(MainViewModel mainViewModel, string eventType)
+            : base(mainViewModel)  // Pass MainViewModel to base class
         {
             EventType = eventType;
             NodeName = $"Event: {eventType}";

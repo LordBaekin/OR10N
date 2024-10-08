@@ -3,33 +3,41 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Xml.Serialization;
 using CoffeeFlow.Annotations;
 using CoffeeFlow.Nodes;
+using CoffeeFlow.ViewModel;
 using UnityFlow;
+using static CoffeeFlow.ViewModel.NetworkViewModel;
 
 namespace CoffeeFlow.Base
+
+
 {
-    /**********************************************************************************************************
-   *             Logic related to a single node on grid, handles core data and dragging, used as base class in other nodes
-   * 
-   *                                                      * Nick @ http://immersivenick.wordpress.com 
-   *                                                      * Free for non-commercial use
-   * *********************************************************************************************************/
-    public abstract partial class NodeViewModel : UserControl, INotifyPropertyChanged
+    public class NodeViewModel : UserControl, INotifyPropertyChanged
     {
         private double _scale;
+        private readonly MainViewModel _mainViewModel;  // Reference to MainViewModel to add undoable actions
 
         public double Scale
         {
             get { return _scale; }
-            set { _scale = value; }
+            set
+            {
+                double previousScale = _scale;
+                _scale = value;
+                OnPropertyChanged("Scale");
+
+                // Add undoable action for scaling
+                var undoAction = new UndoableAction(
+                    doAction: () => Scale = _scale,
+                    undoAction: () => Scale = previousScale
+                );
+                _mainViewModel.AddUndoableAction(undoAction);
+            }
         }
 
         public NodeType NodeType
@@ -37,18 +45,22 @@ namespace CoffeeFlow.Base
             get { return _nodeType; }
             set
             {
+                NodeType previousType = _nodeType;
                 _nodeType = value;
                 OnPropertyChanged("NodeType");
-    
+
+                // Add undoable action for node type change
+                var undoAction = new UndoableAction(
+                    doAction: () => NodeType = _nodeType,
+                    undoAction: () => NodeType = previousType
+                );
+                _mainViewModel.AddUndoableAction(undoAction);
             }
         }
 
         private NodeType _nodeType;
 
-        public virtual string GetSerializationString()
-        {
-            return "";
-        }
+        public virtual string GetSerializationString() => "";
 
         public string NodeDataString { get; set; }
         public string NodeDescription { get; set; }
@@ -60,9 +72,16 @@ namespace CoffeeFlow.Base
             get { return callingClass; }
             set
             {
+                string previousClass = callingClass;
                 callingClass = value;
                 OnPropertyChanged("CallingClass");
 
+                // Add undoable action for calling class change
+                var undoAction = new UndoableAction(
+                    doAction: () => CallingClass = callingClass,
+                    undoAction: () => CallingClass = previousClass
+                );
+                _mainViewModel.AddUndoableAction(undoAction);
             }
         }
 
@@ -72,11 +91,19 @@ namespace CoffeeFlow.Base
             get { return id; }
             set
             {
+                int previousId = id;
                 id = value;
                 OnPropertyChanged("ID");
 
+                // Add undoable action for ID change
+                var undoAction = new UndoableAction(
+                    doAction: () => ID = id,
+                    undoAction: () => ID = previousId
+                );
+                _mainViewModel.AddUndoableAction(undoAction);
             }
         }
+
         public static int TotalIDCount = 0;
 
         public string NodeName
@@ -84,10 +111,16 @@ namespace CoffeeFlow.Base
             get { return _nodeName; }
             set
             {
-
+                string previousName = _nodeName;
                 _nodeName = value;
                 OnPropertyChanged("NodeName");
-                
+
+                // Add undoable action for node name change
+                var undoAction = new UndoableAction(
+                    doAction: () => NodeName = _nodeName,
+                    undoAction: () => NodeName = previousName
+                );
+                _mainViewModel.AddUndoableAction(undoAction);
             }
         }
 
@@ -100,7 +133,6 @@ namespace CoffeeFlow.Base
         public TranslateTransform Transform { get; set; }
         public bool IsMouseDown;
         private string _nodeName;
-
 
         public static NodeViewModel Selected { get; set; }
 
@@ -115,28 +147,23 @@ namespace CoffeeFlow.Base
             this.NodeName = node.NodeName;
             this.Margin = new Thickness(node.MarginX, node.MarginY, 0, 0);
 
-            //decreases potential for duplicate nodes when loading in nodes from file by making sure IDs of new nodes can never be within the range of the files' nodes
             if (this.ID > TotalIDCount)
                 TotalIDCount = this.ID;
         }
 
-        public bool IsSelected {
-            get
-            {
-                if(NodeViewModel.Selected != null)
-                    return NodeViewModel.Selected == this;
-                else
-                {
-                    return false;
-                }
-            }}
+        public bool IsSelected
+        {
+            get => NodeViewModel.Selected != null && NodeViewModel.Selected == this;
+        }
 
-        public NodeViewModel()
+        public NodeViewModel(MainViewModel mainViewModel)
         {
             this.HorizontalAlignment = HorizontalAlignment.Left;
-            this.VerticalAlignment = VerticalAlignment.Top;      
+            this.VerticalAlignment = VerticalAlignment.Top;
 
             this.BorderBrush = new SolidColorBrush(Colors.Red);
+
+            _mainViewModel = mainViewModel; // Initialize _mainViewModel first
 
             TotalIDCount++;
             ID = TotalIDCount;
@@ -150,16 +177,23 @@ namespace CoffeeFlow.Base
 
         public void ScaleBy(double increment)
         {
+            double previousScale = Scale;
             Scale += increment;
             ScaleTransform.ScaleX = Scale;
             ScaleTransform.ScaleY = Scale;
-        }
 
+            // Add undoable action for scaling
+            var undoAction = new UndoableAction(
+                doAction: () => ScaleBy(increment),
+                undoAction: () => ScaleBy(-increment)
+            );
+            _mainViewModel.AddUndoableAction(undoAction);
+        }
 
         bool captured = false;
         UIElement source = null;
 
-        public void MakeDraggable(System.Windows.UIElement moveThisElement, System.Windows.UIElement movedByElement)
+        public void MakeDraggable(UIElement moveThisElement, UIElement movedByElement)
         {
             ScaleTransform scaleTransform = new ScaleTransform(Scale, Scale);
             TranslateTransform transform = new TranslateTransform(0, 0);
@@ -174,7 +208,8 @@ namespace CoffeeFlow.Base
 
             this.Transform = transform;
 
-            System.Windows.Point originalPoint = new System.Windows.Point(0, 0), currentPoint;
+            Point originalPoint = new Point(0, 0), currentPoint;
+            double initialX = 0, initialY = 0;
 
             movedByElement.MouseLeftButtonDown += (sender, b) =>
             {
@@ -183,15 +218,26 @@ namespace CoffeeFlow.Base
                 captured = true;
 
                 IsNodeDragging = true;
-                originalPoint = ((System.Windows.Input.MouseEventArgs)b).GetPosition(moveThisElement);
+                originalPoint = ((MouseEventArgs)b).GetPosition(moveThisElement);
+                initialX = transform.X;
+                initialY = transform.Y;
 
-                // Logic to mark the node as selected
-                NodeViewModel.Selected = this;  // Set this node as the selected node
-                OnPropertyChanged(nameof(IsSelected));  // Notify that the IsSelected property has changed
+                NodeViewModel.Selected = this;
+                OnPropertyChanged(nameof(IsSelected));
             };
 
             movedByElement.MouseLeftButtonUp += (a, b) =>
             {
+                if (captured)
+                {
+                    // Add undoable action for dragging
+                    var undoAction = new UndoableAction(
+                        doAction: () => Transform.X = transform.X,
+                        undoAction: () => { Transform.X = initialX; Transform.Y = initialY; }
+                    );
+                    _mainViewModel.AddUndoableAction(undoAction);
+                }
+
                 Mouse.Capture(null);
                 captured = false;
                 IsNodeDragging = false;
@@ -203,13 +249,12 @@ namespace CoffeeFlow.Base
 
                 if (captured)
                 {
-                    currentPoint = ((System.Windows.Input.MouseEventArgs)b).GetPosition(moveThisElement);
+                    currentPoint = ((MouseEventArgs)b).GetPosition(moveThisElement);
                     transform.X += currentPoint.X - originalPoint.X;
                     transform.Y += currentPoint.Y - originalPoint.Y;
                 }
             };
         }
-
 
         public void DisconnectAllConnectors()
         {
@@ -220,15 +265,13 @@ namespace CoffeeFlow.Base
                 if (connector.IsConnected)
                 {
                     connector.Connection.IsConnected = false;
-                    
-                    //disconnecting variable
-                    if(connector.ParentNode.NodeType == NodeType.VariableNode)
+
+                    if (connector.ParentNode.NodeType == NodeType.VariableNode)
                         connector.RemoveLinkedParameterFromVariableNode();
                 }
             }
         }
 
-        //finds children
         public static IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj) where T : DependencyObject
         {
             if (depObj != null)
@@ -237,14 +280,10 @@ namespace CoffeeFlow.Base
                 {
                     DependencyObject child = VisualTreeHelper.GetChild(depObj, i);
                     if (child != null && child is T)
-                    {
                         yield return (T)child;
-                    }
 
                     foreach (T childOfChild in FindVisualChildren<T>(child))
-                    {
                         yield return childOfChild;
-                    }
                 }
             }
         }
@@ -254,8 +293,7 @@ namespace CoffeeFlow.Base
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

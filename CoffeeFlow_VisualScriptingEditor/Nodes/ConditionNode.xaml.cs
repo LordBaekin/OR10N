@@ -17,6 +17,7 @@ using CoffeeFlow.Base;
 using GalaSoft.MvvmLight.CommandWpf;
 using System.Xml.Serialization;
 using UnityFlow;
+using CoffeeFlow.ViewModel;
 
 namespace CoffeeFlow.Nodes
 {
@@ -24,13 +25,13 @@ namespace CoffeeFlow.Nodes
     /// Interaction logic for DynamicNode.xaml
     /// </summary>
     /// 
-    public partial class ConditionNode : NodeViewModel
+    partial class ConditionNode : NodeViewModel
     {
         public string FullString;
         public string ConnectedToVariableName { get; set; }
         public string ConnectedToVariableCallerClassName { get; set; }
 
-        public ConditionNode()
+        public ConditionNode(MainViewModel mainViewModel) : base(mainViewModel)
         {
             InitializeComponent();
 

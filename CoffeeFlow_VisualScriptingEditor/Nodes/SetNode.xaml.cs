@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using CoffeeFlow.Base;
+using CoffeeFlow.ViewModel;
 using UnityFlow;
 
 namespace CoffeeFlow.Nodes
@@ -24,7 +25,7 @@ namespace CoffeeFlow.Nodes
     {
         public string Operator { get; set; }
 
-        public SetNode()
+        public SetNode(MainViewModel mainViewModel) : base(mainViewModel)
         {
             InitializeComponent();
 

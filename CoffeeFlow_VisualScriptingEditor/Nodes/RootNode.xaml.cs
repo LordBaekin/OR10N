@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using CoffeeFlow.Base;
+using CoffeeFlow.ViewModel;
 using UnityFlow;
 
 namespace CoffeeFlow.Nodes
@@ -28,7 +29,7 @@ namespace CoffeeFlow.Nodes
         public Connector OutputConnector;
         public string EventSourceNodeName;
 
-        public RootNode()
+        public RootNode(MainViewModel mainViewModel) : base(mainViewModel)
         {
             InitializeComponent();
 
@@ -41,9 +42,11 @@ namespace CoffeeFlow.Nodes
             DataContext = this;
         }
 
+        public MainViewModel mainViewModel { get; private set; }
+
         public RootNode GetCopy()
         {
-            RootNode newNode = new RootNode();
+            RootNode newNode = new RootNode(mainViewModel);
             newNode.NodeName = this.NodeName;
 
             return newNode;
