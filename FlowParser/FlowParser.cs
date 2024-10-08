@@ -17,7 +17,7 @@ namespace UnityFlow
      *                                                      * Nick @ http://immersivenick.wordpress.com 
      *                                                      * Free for non-commercial use
      * *********************************************************************************************************/
-    public enum NodeType { RootNode, MethodNode, VariableNode, LogicNode, ConditionNode, EventNode, ActionNode };
+    public enum NodeType { RootNode, MethodNode, VariableNode, LogicNode, ConditionNode, EventNode, ActionNode, SetNode };
 
     public class FlowParser
     {

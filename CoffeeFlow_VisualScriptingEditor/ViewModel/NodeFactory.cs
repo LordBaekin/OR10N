@@ -43,6 +43,9 @@ namespace CoffeeFlow.Base
                 case NodeType.VariableNode:
                     nodeToAdd = CreateVariableNode(p, nodeWrapper);
                     break;
+                case NodeType.SetNode:
+                    nodeToAdd = CreateSetNode(p, nodeWrapper);
+                    break;
             }
 
             return nodeToAdd;
@@ -89,6 +92,14 @@ namespace CoffeeFlow.Base
         private ConditionNode CreateConditionNode(Point p, NodeWrapper nodeWrapper)
         {
             ConditionNode n = new ConditionNode(mainViewModel);
+            n.NodeName = nodeWrapper.NodeName;
+            n.Margin = new Thickness(p.X, p.Y, 0, 0);
+            return n;
+        }
+
+        private SetNode CreateSetNode(Point p, NodeWrapper nodeWrapper)
+        {
+            SetNode n = new SetNode(mainViewModel);
             n.NodeName = nodeWrapper.NodeName;
             n.Margin = new Thickness(p.X, p.Y, 0, 0);
             return n;
