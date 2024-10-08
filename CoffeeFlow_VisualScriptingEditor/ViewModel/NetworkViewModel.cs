@@ -708,8 +708,8 @@ namespace CoffeeFlow.ViewModel
         public void ImportPerlFile(string filePath)
         {
             // Define Perl script path and arguments
-            string perlExecutable = @"C:\path\to\perl.exe";  // Path to your Perl executable
-            string scriptPath = @"C:\path\to\parse_perl_script.pl";  // A Perl script that uses PPI to parse another Perl file
+            string perlExecutable = @"C:\Strawberry\perl\bin\perl.exe";  // Path to your Perl executable
+            string scriptPath = @"C:\Users\corys\Source\Repos\OR10N\FlowParser\parse_perl_script.pl";  // A Perl script that uses PPI to parse another Perl file
 
             // Create a new process to execute the Perl script
             Process perlProcess = new Process();

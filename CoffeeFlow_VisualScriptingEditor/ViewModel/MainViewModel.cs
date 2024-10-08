@@ -499,13 +499,15 @@ namespace CoffeeFlow.ViewModel
         public void GetJSONMethods(string filename)
         {
             string jsonContent = File.ReadAllText(filename);
-            var jsonData = JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonContent);
 
-            foreach (var key in jsonData.Keys)
+            // Deserialize into a List<string> since the JSON is an array
+            var jsonData = JsonConvert.DeserializeObject<List<string>>(jsonContent);
+
+            foreach (var method in jsonData)
             {
                 NodeWrapper node = new NodeWrapper
                 {
-                    NodeName = key,
+                    NodeName = method,  // Assign the method string
                     TypeOfNode = NodeType.MethodNode
                 };
                 Methods.Add(node);
