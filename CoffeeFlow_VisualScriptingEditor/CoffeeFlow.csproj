@@ -144,7 +144,7 @@
     <Compile Include="Nodes\ActionNode.xaml.cs">
       <DependentUpon>ActionNode.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UndoableAction .cs" />
+    <Compile Include="Base\UndoableAction .cs" />
     <Compile Include="ValueConverters\EnabledToVisibilityConverter.cs" />
     <Compile Include="ViewModel\LocalizationData.cs" />
     <Compile Include="ViewModel\NodeViewModel.cs" />
