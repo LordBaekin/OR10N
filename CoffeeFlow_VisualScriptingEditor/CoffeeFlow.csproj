@@ -147,6 +147,7 @@
     <Compile Include="Base\UndoableAction .cs" />
     <Compile Include="ValueConverters\EnabledToVisibilityConverter.cs" />
     <Compile Include="ViewModel\LocalizationData.cs" />
+    <Compile Include="ViewModel\NodeFactory.cs" />
     <Compile Include="ViewModel\NodeViewModel.cs" />
     <Compile Include="Nodes\DynamicNode.xaml.cs">
       <DependentUpon>DynamicNode.xaml</DependentUpon>

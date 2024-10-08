@@ -44,12 +44,16 @@ namespace CoffeeFlow.ViewModel
         public List<NodeViewModel> AddedNodesOrder;
         public List<NodeViewModel> RemovedNodesOrder;
         public int UndoCount = 0;
+        private NodeFactory nodeFactory;
+
+        // Stacks for undo and redo actions
         private Stack<UndoableAction> undoStack = new Stack<UndoableAction>();
         private Stack<UndoableAction> redoStack = new Stack<UndoableAction>();
 
         // RelayCommands for Undo/Redo
         public RelayCommand UndoCommand { get; }
         public RelayCommand RedoCommand { get; }
+       
 
         public class UndoableAction
         {
@@ -299,85 +303,8 @@ namespace CoffeeFlow.ViewModel
 
         public void AddNodeToGrid(NodeWrapper node)
         {
-            NodeViewModel nodeToAdd = null;
-
-            //Determine location to place node, bit of a hack
-            MainWindow main = Application.Current.MainWindow as MainWindow;
-            Point p = new Point(main.Width / 2, main.Height / 2);
-
-            if (main.IsNodePopupVisible)
-                p = Mouse.GetPosition(main);
-            else
-            {
-                Random r = new Random();
-                int increment = r.Next(-400, 400);
-                p = new Point(p.X + increment, p.Y + increment);
-            }
-
-            if (node.TypeOfNode == NodeType.ActionNode)
-            {
-                MainViewModel mainViewModel = MainViewModel.Instance;
-
-                ActionNode n = new ActionNode(mainViewModel, "SomeAction", "Some dialogue"); // Pass MainViewModel as the first argument
-                n.Margin = new Thickness(p.X, p.Y, 0, 0);
-                nodeToAdd = n;
-            }
-
-            if (node.TypeOfNode == NodeType.EventNode)
-            {
-                MainViewModel mainViewModel = MainViewModel.Instance;
-
-                EventNode n = new EventNode(mainViewModel, "SomeEvent");
-                n.Margin = new Thickness(p.X, p.Y, 0, 0);
-                nodeToAdd = n;
-            }
-
-
-
-            if (node.TypeOfNode == NodeType.RootNode)
-            {
-                RootNode n = new RootNode(MainViewModel.Instance);
-                n.NodeName = node.NodeName;
-
-                n.Margin = new Thickness(p.X, p.Y, 0, 0);
-                nodeToAdd = n;
-            }
-
-            if (node.TypeOfNode == NodeType.ConditionNode)
-            {
-                // Ensure 'this' refers to the current NetworkViewModel instance that contains the MainViewModel
-                ConditionNode n = new ConditionNode(MainViewModel.Instance);  // Pass the MainViewModel instance
-                n.NodeName = node.NodeName;
-
-                n.Margin = new Thickness(p.X, p.Y, 0, 0);
-                nodeToAdd = n;
-            }
-
-            if (node.TypeOfNode == NodeType.MethodNode)
-            {
-                DynamicNode n = new DynamicNode(MainViewModel.Instance);
-                n.NodeName = node.NodeName;
-
-                foreach (var arg in node.Arguments)
-                {
-                    n.AddArgument(arg.ArgTypeString, arg.Name, false, 0, null);
-                }
-
-                n.Margin = new Thickness(p.X, p.Y, 0, 0);
-                n.CallingClass = node.CallingClass;
-                nodeToAdd = n;
-            }
-
-            if (node.TypeOfNode == NodeType.VariableNode)
-            {
-                VariableNode n = new VariableNode(MainViewModel.Instance);
-                n.NodeName = node.NodeName;
-                n.Type = node.BaseAssemblyType;
-
-                n.Margin = new Thickness(p.X, p.Y, 0, 0);
-                n.CallingClass = node.CallingClass;
-                nodeToAdd = n;
-            }
+            // Use nodeFactory to create and add nodes
+            NodeViewModel nodeToAdd = nodeFactory.CreateNode(node);
 
             if (nodeToAdd != null)
             {
@@ -927,12 +854,17 @@ namespace CoffeeFlow.ViewModel
             AddedNodesOrder = new List<NodeViewModel>();
             RemovedNodesOrder = new List<NodeViewModel>();
             Nodes = new ObservableCollection<NodeViewModel>();
+
+            // Initialize Undo/Redo commands
             UndoCommand = new RelayCommand(Undo, CanUndo);
             RedoCommand = new RelayCommand(Redo, CanRedo);
 
+            // Correctly instantiate NodeFactory with the MainViewModel singleton instance
+            nodeFactory = new NodeFactory(MainViewModel.Instance);
         }
-         // Add a new undoable action to the stack
-    public void AddUndoableAction(UndoableAction action)
+
+        // Add a new undoable action to the stack
+        public void AddUndoableAction(UndoableAction action)
     {
         undoStack.Push(action);
         redoStack.Clear();  // Clear redo stack when new action is added

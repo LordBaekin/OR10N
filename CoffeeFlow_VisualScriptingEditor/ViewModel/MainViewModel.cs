@@ -32,7 +32,7 @@ namespace CoffeeFlow.ViewModel
         public RelayCommand UndoCommand { get; }
         public RelayCommand RedoCommand { get; }
 
-        private static MainViewModel instance;
+        private static MainViewModel instance = new MainViewModel();
         public static MainViewModel Instance
         {
             get
@@ -228,11 +228,22 @@ namespace CoffeeFlow.ViewModel
                 newTrigger.NodeName = NewTriggerName;
                 newTrigger.TypeOfNode = NodeType.RootNode;
 
-                Triggers.Add(newTrigger);
+                Triggers.Add(newTrigger);  // Add to Triggers
+
+                // Create an undoable action for adding the node
+                var undoAction = new UndoableAction(
+                    doAction: () => Triggers.Add(newTrigger),  // Redo adding
+                    undoAction: () => Triggers.Remove(newTrigger)  // Undo adding
+                );
+
+                // Push this action onto the undo stack
+                AddUndoableAction(undoAction);
 
                 NewTriggerName = "";
+                RefreshCommandStates();
             }
         }
+
 
         private void openLocalizationLoadPanelUI()
         {
@@ -571,28 +582,72 @@ namespace CoffeeFlow.ViewModel
 
         public void DeleteNodeFromNodeList(NodeWrapper node)
         {
+            if (node != null)
+            {
+                // Remove node from appropriate collection
+                if (node.TypeOfNode == NodeType.MethodNode)
+                    Methods.Remove(node);
+                else if (node.TypeOfNode == NodeType.ConditionNode || node.TypeOfNode == NodeType.RootNode)
+                    Triggers.Remove(node);
+                else if (node.TypeOfNode == NodeType.VariableNode)
+                    Variables.Remove(node);
+
+                // Create an undoable action for removing the node
+                var undoAction = new UndoableAction(
+                    doAction: () => DeleteNodeFromNodeList(node),  // Redo the delete
+                    undoAction: () => AddNodeToList(node)  // Undo the delete by adding back
+                );
+
+                // Push the action onto the undo stack
+                AddUndoableAction(undoAction);
+                RefreshCommandStates();
+            }
+        }
+
+        private void AddNodeToList(NodeWrapper node)
+        {
             if (node.TypeOfNode == NodeType.MethodNode)
-                Methods.Remove(node);
-
-            if (node.TypeOfNode == NodeType.ConditionNode || node.TypeOfNode == NodeType.RootNode)
-                Triggers.Remove(node);
-
-            if (node.TypeOfNode == NodeType.VariableNode)
-                Variables.Remove(node);
+                Methods.Add(node);
+            else if (node.TypeOfNode == NodeType.ConditionNode || node.TypeOfNode == NodeType.RootNode)
+                Triggers.Add(node);
+            else if (node.TypeOfNode == NodeType.VariableNode)
+                Variables.Add(node);
         }
 
         public MainViewModel()
         {
+
+
+            // Initialize DebugList
+            DebugList = new ObservableCollection<string>();
+
+            LogStatus("MainViewModel initialized.");
+
+
             // Ensure only one instance of MainViewModel exists
             if (instance != null && instance != this)
+            {
                 LogStatus("There's already a Game Manager in the scene, destroying this one.");
+            }
             else
+            {
                 instance = this;
+            }
 
             // Initialize DebugList
             DebugList = new ObservableCollection<string>();
             LogStatus("MainViewModel initialized.");
 
+            // Initialize nodes and add them to Triggers
+            InitializeNodeWrappers();
+
+            // Initialize Undo/Redo commands after other setup
+            UndoCommand = new RelayCommand(Undo, CanUndo);
+            RedoCommand = new RelayCommand(Redo, CanRedo);
+        }
+
+        private void InitializeNodeWrappers()
+        {
             // Example node wrappers
             NodeWrapper r = new NodeWrapper
             {
@@ -617,11 +672,8 @@ namespace CoffeeFlow.ViewModel
             Triggers.Add(r);
             Triggers.Add(r2);
             Triggers.Add(con);
-
-            // Initialize Undo/Redo commands after other setup
-            UndoCommand = new RelayCommand(Undo, CanUndo);
-            RedoCommand = new RelayCommand(Redo, CanRedo);
         }
+
         public void AddUndoableAction(UndoableAction action)
         {
             undoStack.Push(action);
@@ -636,6 +688,7 @@ namespace CoffeeFlow.ViewModel
                 var action = undoStack.Pop();
                 action.Undo();
                 redoStack.Push(action);
+                Console.WriteLine("Undo performed.");
                 RefreshCommandStates();
             }
         }
@@ -647,6 +700,7 @@ namespace CoffeeFlow.ViewModel
                 var action = redoStack.Pop();
                 action.Execute();
                 undoStack.Push(action);
+                Console.WriteLine("Redo performed.");
                 RefreshCommandStates();
             }
         }
@@ -659,13 +713,24 @@ namespace CoffeeFlow.ViewModel
             UndoCommand.RaiseCanExecuteChanged();
             RedoCommand.RaiseCanExecuteChanged();
         }
-    
+
         public void LogStatus(string status, bool showInStatusLabel = false)
         {
+            // Ensure DebugList is not null
+            if (DebugList == null)
+            {
+                DebugList = new ObservableCollection<string>();
+            }
+
+            // Add status to the DebugList
             DebugList.Add(status);
 
             if (showInStatusLabel)
+            {
                 StatusLabel = status;
+            }
+
+
         }
     }
 }

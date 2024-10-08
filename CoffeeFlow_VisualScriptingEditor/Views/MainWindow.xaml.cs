@@ -28,6 +28,7 @@ namespace CoffeeFlow
     /// </summary>
     public partial class MainWindow : Window
     {
+        private NodeFactory nodeFactory;
         private RelayCommand _toggleSidebar;
         public RelayCommand ToggleSidebarCommand
         {
@@ -120,9 +121,12 @@ namespace CoffeeFlow
         public MainWindow()
         {
             InitializeComponent();
-
+            MainViewModel mainViewModel = MainViewModel.Instance;
+            
             NetworkViewModel v = SimpleIoc.Default.GetInstance<NetworkViewModel>();
             v.MainWindow = this;
+            nodeFactory = new NodeFactory(mainViewModel);
+            
 
             ToggleSidebar(); //turn sidebar off
             HideNodeList();
