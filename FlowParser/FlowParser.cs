@@ -350,6 +350,7 @@ namespace UnityFlow
     [Serializable]
     public abstract class SerializeableNodeViewModel
     {
+
         private NodeType _nodeType;
         public NodeType NodeType
         {

@@ -60,18 +60,7 @@ namespace OR10N.Views
             get { return _showEvents ?? (_showEvents = new RelayCommand(ShowEvents)); }
         }
 
-        public void ShowEvents()
-        {
-            btnTriggers.Style = darkstyle;
-            btnEvents.Style = bluestyle;
-            btnInsight.Style = darkstyle;
-            btnVariables.Style = darkstyle;
-
-            MainViewModel m = SimpleIoc.Default.GetInstance<MainViewModel>();
-            lstAvailableNodes.ItemsSource = m.Events;
-
-            DisableSearch();
-        }
+        
 
         private RelayCommand _showTriggers;
         public RelayCommand ShowTriggersCommand
@@ -130,6 +119,19 @@ namespace OR10N.Views
 
             MainViewModel m = SimpleIoc.Default.GetInstance<MainViewModel>();
             lstAvailableNodes.ItemsSource = m.Variables;
+
+            DisableSearch();
+        }
+
+        public void ShowEvents()
+        {
+            btnTriggers.Style = darkstyle;
+            btnEvents.Style = bluestyle;
+            btnInsight.Style = darkstyle;
+            btnVariables.Style = darkstyle;
+
+            MainViewModel m = SimpleIoc.Default.GetInstance<MainViewModel>();
+            lstAvailableNodes.ItemsSource = m.Events;
 
             DisableSearch();
         }

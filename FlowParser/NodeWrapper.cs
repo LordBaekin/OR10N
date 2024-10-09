@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+
 namespace UnityFlow
 {
     /**********************************************************************************************************
@@ -49,15 +50,11 @@ namespace UnityFlow
 
             return arg;
         }
-        public NodeWrapper()
-        {
-            Arguments = new List<Argument>();
-            IsDeletable = true;
-        }
+        public NodeWrapper() : this(string.Empty) { }
 
         public NodeWrapper(string name)
         {
-            this.NodeName = name;
+            NodeName = name;
             Arguments = new List<Argument>();
             IsDeletable = true;
         }
