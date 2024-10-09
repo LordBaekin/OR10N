@@ -130,6 +130,12 @@ namespace CoffeeFlow.ViewModel
                 RaisePropertyChanged("FileLoadInfo");
             }
         }
+        private bool CanExecuteSaveAsLua()
+        {
+            bool canExecute = Nodes?.Any() == true;
+            LogStatus($"CanExecuteSaveAsLua check: Nodes count = {Nodes?.Count ?? 0}, Can execute = {canExecute}");
+            return canExecute;
+        }
 
         private bool isClassFileName = true;
         public bool IsClassFileName
@@ -168,6 +174,36 @@ namespace CoffeeFlow.ViewModel
                     events = new ObservableCollection<NodeWrapper>();
                 }
                 return events;
+            }
+        }
+        private ObservableCollection<NodeViewModel> nodes = new ObservableCollection<NodeViewModel>();
+        public ObservableCollection<NodeViewModel> Nodes
+        {
+            get { return nodes; }
+            set
+            {
+                nodes = value;
+                RaisePropertyChanged(nameof(Nodes));
+            }
+        }
+
+        private RelayCommand _saveAsLuaCommand;
+        public RelayCommand SaveAsLuaCommand
+        {
+            get
+            {
+                LogStatus("Accessing SaveAsLuaCommand...");
+                if (_saveAsLuaCommand == null)
+                {
+                    LogStatus("Initializing SaveAsLuaCommand...");
+                    _saveAsLuaCommand = new RelayCommand(SaveAsLua, CanExecuteSaveAsLua);
+                    LogStatus("SaveAsLuaCommand initialized.");
+                }
+                else
+                {
+                    LogStatus("SaveAsLuaCommand already initialized.");
+                }
+                return _saveAsLuaCommand;
             }
         }
 
@@ -615,6 +651,66 @@ namespace CoffeeFlow.ViewModel
             }
         }
 
+        private void SaveAsLua()
+        {
+            LogStatus("Executing SaveAsLua command...");
+            try
+            {
+                string luaScript = ExportNodesToLua();
+                LogStatus($"Lua script generated successfully. Script length: {luaScript.Length} characters.");
+
+                // Save dialog for Lua script
+                Microsoft.Win32.SaveFileDialog saveFileDialog = new Microsoft.Win32.SaveFileDialog
+                {
+                    Filter = "Lua Files (.lua)|*.lua|All Files (*.*)|*.*",
+                    FilterIndex = 1
+                };
+
+                bool? result = saveFileDialog.ShowDialog();
+                LogStatus($"Save dialog result: {result}");
+
+                if (result == true)
+                {
+                    File.WriteAllText(saveFileDialog.FileName, luaScript);
+                    LogStatus($"Lua script saved to {saveFileDialog.FileName}");
+                }
+                else
+                {
+                    LogStatus("Save operation canceled by the user.");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogStatus($"Error during SaveAsLua execution: {ex.Message}");
+            }
+        }
+        public string ExportNodesToLua()
+        {
+            StringBuilder luaScript = new StringBuilder();
+            LogStatus("Starting export of nodes to Lua...");
+
+            try
+            {
+                foreach (var node in Nodes)
+                {
+                    if (node is DynamicNode funcNode)
+                    {
+                        luaScript.AppendLine($"function {funcNode.NodeName}()");
+                        luaScript.AppendLine(funcNode.NodeBody);  // Assuming NodeBody contains the Lua code for this node.
+                        luaScript.AppendLine("end");
+                        LogStatus($"Exported function: {funcNode.NodeName}");
+                    }
+                    // Add additional cases for exporting conditionals, loops, etc.
+                }
+                LogStatus("Node export to Lua completed successfully.");
+            }
+            catch (Exception ex)
+            {
+                LogStatus($"Error during Lua export: {ex.Message}");
+            }
+
+            return luaScript.ToString();
+        }
 
 
         public void GetLuaMethods(string filename)

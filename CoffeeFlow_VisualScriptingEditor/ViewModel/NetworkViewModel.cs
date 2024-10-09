@@ -23,7 +23,6 @@ using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using UnityFlow;
 using NLua;
-using System.Text;
 using System.Diagnostics;
 using MoonSharp.Interpreter;
 using System.Text.RegularExpressions;
