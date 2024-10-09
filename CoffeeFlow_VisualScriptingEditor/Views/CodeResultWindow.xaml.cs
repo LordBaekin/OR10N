@@ -13,9 +13,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using CoffeeFlow.Annotations;
+using OR10N.Annotations;
 
-namespace CoffeeFlow.Views
+namespace OR10N.Views
 {
     /// <summary>
     /// Interaction logic for CodeResultWindow.xaml

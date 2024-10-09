@@ -12,15 +12,15 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using GalaSoft.MvvmLight.Ioc;
-using CoffeeFlow.Nodes;
-using CoffeeFlow.ViewModel;
+using OR10N.Nodes;
+using OR10N.ViewModel;
 using Brush = System.Windows.Media.Brush;
 using Color = System.Windows.Media.Color;
 using Pen = System.Windows.Media.Pen;
 using Point = System.Windows.Point;
 using System.Diagnostics;
 
-namespace CoffeeFlow.Base
+namespace OR10N.Base
 {
     /**********************************************************************************************************
      *             Logic related to the grid itself and its manipulation like moving, zooming and drawing of node connections
@@ -186,41 +186,62 @@ namespace CoffeeFlow.Base
             if (Connector.CurrentConnection != null)
             {
                 var currentPin = Connector.CurrentConnection;
-                var first = currentPin.TransformToAncestor(MainWindow.GetWindow(this)).Transform(new Point(0, 0));
 
-                // Second is the cursor position
-                var second = Mouse.GetPosition(this);
-
-                first.X += currentPin.Width / 2;
-                first.Y += currentPin.Height / 2;
-
-                // Swap if we are connecting an input
-                if (currentPin.TypeOfInputOutput == InputOutputType.Input)
+                // Check if currentPin is still part of the visual tree and has a valid connection
+                if (currentPin == null || !currentPin.IsVisible)
                 {
-                    var temp = first;
-                    first = second;
-                    second = temp;
+                    return; // Skip drawing as the current pin is no longer valid.
                 }
 
-                int connectionStrenght = networkView.BezierStrength;
-
-                double[] ptind = new double[] {     first.X, first.Y,
-                                                    first.X + connectionStrenght, first.Y,
-                                                    second.X - connectionStrenght, second.Y,
-                                                    second.X, second.Y};
-
-                double[] p = new double[POINTS_ON_CURVE];
-
-                bezierCurve.Bezier2D(ptind, (POINTS_ON_CURVE) / 2, p);
-
-                // draw points
-                for (int i = 1; i != POINTS_ON_CURVE - 3; i += 2)
+                try
                 {
-                    drawingContext.DrawLine(new Pen(color, thickness), new Point((int)p[i + 1], (int)p[i]), new Point((int)p[i + 3], (int)p[i + 2]));
+                    var first = currentPin.TransformToAncestor(MainWindow.GetWindow(this)).Transform(new Point(0, 0));
+
+                    // Get the cursor position for the second point
+                    var second = Mouse.GetPosition(this);
+
+                    first.X += currentPin.Width / 2;
+                    first.Y += currentPin.Height / 2;
+
+                    // Swap if we are connecting an input
+                    if (currentPin.TypeOfInputOutput == InputOutputType.Input)
+                    {
+                        var temp = first;
+                        first = second;
+                        second = temp;
+                    }
+
+                    int connectionStrenght = networkView.BezierStrength;
+
+                    double[] ptind = new double[]
+                    {
+                first.X, first.Y,
+                first.X + connectionStrenght, first.Y,
+                second.X - connectionStrenght, second.Y,
+                second.X, second.Y
+                    };
+
+                    double[] p = new double[POINTS_ON_CURVE];
+
+                    bezierCurve.Bezier2D(ptind, POINTS_ON_CURVE / 2, p);
+
+                    // Draw the points
+                    for (int i = 1; i != POINTS_ON_CURVE - 3; i += 2)
+                    {
+                        drawingContext.DrawLine(new Pen(color, thickness),
+                            new Point((int)p[i + 1], (int)p[i]),
+                            new Point((int)p[i + 3], (int)p[i + 2]));
+                    }
+                }
+                catch (InvalidOperationException ex)
+                {
+                    // Handle the situation where the visual tree is not intact anymore.
+                    // Log the error or take appropriate action.
+                    Console.WriteLine($"Exception during drawing: {ex.Message}");
                 }
             }
-
         }
+
 
         float ADDX = -5;
         float ADDY = -15;
@@ -230,40 +251,60 @@ namespace CoffeeFlow.Base
             int thickness = 1;
             Brush color = System.Windows.Media.Brushes.DarkGray;
 
-            //draw all connections
             // Draw all the connections from input to output
             foreach (Connector cp in FindVisualChildren<Connector>(MainWindow.GetWindow(this)))
             {
+                // Check if the connector is connected and is an output
                 if (cp.IsConnected && cp.TypeOfInputOutput == InputOutputType.Output)
                 {
-      
-                    var output = cp.TransformToAncestor(MainWindow.GetWindow(this)).Transform(new Point(0, 0));
-                    var input = cp.Connection.TransformToAncestor(MainWindow.GetWindow(this)).Transform(new Point(0, 0));
-
-                    input.Y += 5;
-                    output.Y += 5;
-
-                    // linear
-                    //drawingContext.DrawLine(new Pen(color, thickness), first, second);
-
-                    int connectionStrenght = networkView.BezierStrength;
-
-                    double[] ptind = new double[] { output.X, output.Y,
-                                                    output.X + connectionStrenght, output.Y,
-                                                    input.X - connectionStrenght, input.Y,
-                                                    input.X, input.Y};
-                    double[] p = new double[POINTS_ON_CURVE];
-
-                    bezierCurve.Bezier2D(ptind, (POINTS_ON_CURVE) / 2, p);
-
-                    // draw points
-                    for (int i = 1; i != POINTS_ON_CURVE - 3; i += 2)
+                    try
                     {
-                        drawingContext.DrawLine(new Pen(color, thickness), new Point((int)p[i + 1], (int)p[i]), new Point((int)p[i + 3], (int)p[i + 2]));
+                        // Ensure both cp and its connected input are still part of the visual tree
+                        if (cp.Connection == null || !cp.IsVisible || !cp.Connection.IsVisible)
+                        {
+                            continue; // Skip this connection if it's not valid.
+                        }
+
+                        // Get positions of output and input points
+                        var output = cp.TransformToAncestor(MainWindow.GetWindow(this)).Transform(new Point(0, 0));
+                        var input = cp.Connection.TransformToAncestor(MainWindow.GetWindow(this)).Transform(new Point(0, 0));
+
+                        // Adjust positions for better visualization
+                        input.Y += 5;
+                        output.Y += 5;
+
+                        int connectionStrenght = networkView.BezierStrength;
+
+                        // Define control points for the Bezier curve
+                        double[] ptind = new double[] {
+                    output.X, output.Y,
+                    output.X + connectionStrenght, output.Y,
+                    input.X - connectionStrenght, input.Y,
+                    input.X, input.Y
+                };
+
+                        double[] p = new double[POINTS_ON_CURVE];
+                        bezierCurve.Bezier2D(ptind, POINTS_ON_CURVE / 2, p);
+
+                        // Draw the Bezier curve
+                        for (int i = 1; i != POINTS_ON_CURVE - 3; i += 2)
+                        {
+                            drawingContext.DrawLine(
+                                new Pen(color, thickness),
+                                new Point((int)p[i + 1], (int)p[i]),
+                                new Point((int)p[i + 3], (int)p[i + 2])
+                            );
+                        }
+                    }
+                    catch (InvalidOperationException ex)
+                    {
+                        // Handle the exception gracefully, perhaps log it for debugging.
+                        Console.WriteLine($"Exception while drawing connection: {ex.Message}");
                     }
                 }
-            }            
+            }
         }
+
 
         private void OnMouseWheel(object sender, MouseWheelEventArgs mouseWheelEventArgs)
         {

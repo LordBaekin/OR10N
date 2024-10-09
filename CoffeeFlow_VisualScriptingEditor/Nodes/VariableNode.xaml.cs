@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
-using CoffeeFlow.Base;
-using CoffeeFlow.ViewModel;
+using OR10N.Base;
+using OR10N.ViewModel;
 using UnityFlow;
 
-namespace CoffeeFlow.Nodes
+namespace OR10N.Nodes
 {
     /// <summary>
     /// Interaction logic for VariableNode.xaml

@@ -12,11 +12,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using CoffeeFlow.Base;
-using CoffeeFlow.ViewModel;
+using OR10N.Base;
+using OR10N.ViewModel;
 using UnityFlow;
 
-namespace CoffeeFlow.Nodes
+namespace OR10N.Nodes
 {
     /// <summary>
     /// Interaction logic for RootNode.xaml

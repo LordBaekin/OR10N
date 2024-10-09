@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
-using CoffeeFlow.Base;
+using OR10N.Base;
 
-namespace CoffeeFlow.ValueConverters
+namespace OR10N.ValueConverters
 {
     public class ConnectorTypeToCornerRadiusConverter : IValueConverter
     {

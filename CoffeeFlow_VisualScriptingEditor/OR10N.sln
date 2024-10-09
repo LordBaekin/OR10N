@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeeFlow", "CoffeeFlow.csproj", "{D051C877-3247-43D7-BAB8-8B7E82062A5F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OR10N", "OR10N.csproj", "{D051C877-3247-43D7-BAB8-8B7E82062A5F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlowParser", "..\FlowParser\FlowParser.csproj", "{E2D011AC-8BCE-464E-9E1D-7F63BC823313}"
 EndProject

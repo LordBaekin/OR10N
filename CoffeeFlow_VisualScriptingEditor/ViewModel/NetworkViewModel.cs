@@ -16,8 +16,8 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using GalaSoft.MvvmLight.CommandWpf;
-using CoffeeFlow.Base;
-using CoffeeFlow.Nodes;
+using OR10N.Base;
+using OR10N.Nodes;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
@@ -29,7 +29,7 @@ using System.Text.RegularExpressions;
 using GalaSoft.MvvmLight.Ioc;
 
 
-namespace CoffeeFlow.ViewModel
+namespace OR10N.ViewModel
 {
     /**********************************************************************************************************
    *             Logic related to the nodes present on the grid and their connections and related commands

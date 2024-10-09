@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="CoffeeFlow.Views.NodeListWindow"
+﻿<UserControl x:Class="OR10N.Views.NodeListWindow"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 

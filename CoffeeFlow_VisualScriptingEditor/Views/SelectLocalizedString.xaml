@@ -1,9 +1,9 @@
-﻿<Window x:Class="CoffeeFlow.Views.SelectLocalizedString"
+﻿<Window x:Class="OR10N.Views.SelectLocalizedString"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:views="clr-namespace:CoffeeFlow.Views"
+        xmlns:views="clr-namespace:OR10N.Views"
         mc:Ignorable="d" x:Name="nodeList"  DataContext="{Binding Source={StaticResource Locator}}" Loaded="stringPanel_Loaded" Background="Black" Height="395.032" Width="552.258">
     <Grid >
         <Grid.RowDefinitions>

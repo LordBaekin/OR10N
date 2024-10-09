@@ -4,10 +4,10 @@ using System.Windows.Controls;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using Microsoft.Practices.ServiceLocation;
-using CoffeeFlow.Base;
-using CoffeeFlow.Nodes;
+using OR10N.Base;
+using OR10N.Nodes;
 
-namespace CoffeeFlow.ViewModel
+namespace OR10N.ViewModel
 {
     /// <summary>
     /// This class contains static references to all the view models in the

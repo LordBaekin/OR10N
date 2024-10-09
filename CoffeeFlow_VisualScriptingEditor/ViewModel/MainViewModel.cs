@@ -12,17 +12,17 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Ioc;
 using Microsoft.Win32;  // For OpenFileDialog
-using CoffeeFlow.Annotations;
-using CoffeeFlow.Base;
-using CoffeeFlow.Nodes;
-using CoffeeFlow.Views;
+using OR10N.Annotations;
+using OR10N.Base;
+using OR10N.Nodes;
+using OR10N.Views;
 using Roslyn.Compilers.CSharp;
 using UnityFlow;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
-using static CoffeeFlow.ViewModel.NetworkViewModel;
+using static OR10N.ViewModel.NetworkViewModel;
 
-namespace CoffeeFlow.ViewModel
+namespace OR10N.ViewModel
 {
     public class MainViewModel : ViewModelBase
     {

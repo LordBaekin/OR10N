@@ -1,9 +1,9 @@
-<Application x:Class="CoffeeFlow.App" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" StartupUri="Views/MainWindow.xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" d1p1:Ignorable="d" xmlns:d1p1="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:valueConverters="clr-namespace:CoffeeFlow.ValueConverters">
+<Application x:Class="OR10N.App" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" StartupUri="Views/MainWindow.xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" d1p1:Ignorable="d" xmlns:d1p1="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:valueConverters="clr-namespace:OR10N.ValueConverters">
   <Application.Resources>
         <valueConverters:ToUpperValueConverter x:Key="toUpperConverter"/>
         <valueConverters:EnabledToVisibilityConverter x:Key="enableToVisibilityConverter"/>
-        <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" xmlns:vm="clr-namespace:CoffeeFlow.ViewModel" />
+        <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" xmlns:vm="clr-namespace:OR10N.ViewModel" />
         <SolidColorBrush x:Key="GrayBackgroundBrush" Color="#FF1D1B1B">
         </SolidColorBrush>
         <SolidColorBrush x:Key="ForegroundLightBrush" Color="#FFCDCDCD">

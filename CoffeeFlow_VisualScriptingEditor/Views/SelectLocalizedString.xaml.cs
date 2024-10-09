@@ -19,13 +19,13 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Ioc;
-using CoffeeFlow.Annotations;
-using CoffeeFlow.Base;
-using CoffeeFlow.Nodes;
-using CoffeeFlow.ViewModel;
+using OR10N.Annotations;
+using OR10N.Base;
+using OR10N.Nodes;
+using OR10N.ViewModel;
 using UnityFlow;
 
-namespace CoffeeFlow.Views
+namespace OR10N.Views
 {
     /// <summary>
     /// Interaction logic for NodeListWindow.xaml

@@ -1,4 +1,4 @@
-﻿<Window x:Class="CoffeeFlow.Views.OpenCodeWindow"
+﻿<Window x:Class="OR10N.Views.OpenCodeWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Open C# code" Height="105" Width="479" DataContext="{Binding Source={StaticResource Locator}}" ResizeMode="NoResize">

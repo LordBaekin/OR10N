@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CoffeeFlow.Views
+namespace OR10N.Views
 {
     /// <summary>
     /// Interaction logic for LocalizationListBox.xaml

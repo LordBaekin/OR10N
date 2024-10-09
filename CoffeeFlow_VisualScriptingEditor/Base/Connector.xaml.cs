@@ -1,5 +1,5 @@
-﻿using CoffeeFlow.Nodes;
-using CoffeeFlow.ViewModel;
+﻿using OR10N.Nodes;
+using OR10N.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,7 +17,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using UnityFlow;
 
-namespace CoffeeFlow.Base
+namespace OR10N.Base
 {
     /// <summary>
     /// Interaction logic for Connector.xaml

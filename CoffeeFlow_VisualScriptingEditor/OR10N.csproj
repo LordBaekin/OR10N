@@ -7,7 +7,7 @@
     <ProjectGuid>{D051C877-3247-43D7-BAB8-8B7E82062A5F}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CoffeeFlow</RootNamespace>
+    <RootNamespace>OR10N</RootNamespace>
     <AssemblyName>OR10N</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

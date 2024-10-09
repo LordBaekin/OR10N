@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace CoffeeFlow.ValueConverters
+namespace OR10N.ValueConverters
 {
     [ValueConversion(typeof(bool), typeof(Visibility))]
     public class EnabledToVisibilityConverter : IValueConverter

@@ -1,9 +1,9 @@
-﻿<Window x:Class="CoffeeFlow.MainWindow"
+﻿<Window x:Class="OR10N.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:base="clr-namespace:CoffeeFlow.Base"
-        xmlns:views="clr-namespace:CoffeeFlow.Views"
-        Title="CoffeeFlow - Visual Flow Scripting Tool" Height="768" Width="1368" DataContext="{Binding Source={StaticResource Locator}}" Icon="/CoffeeFlow;component/icon.ico">
+        xmlns:base="clr-namespace:OR10N.Base"
+        xmlns:views="clr-namespace:OR10N.Views"
+        Title="OR10N - Enhanced Quest Creation for EverQuest" Height="768" Width="1368" DataContext="{Binding Source={StaticResource Locator}}" Icon="/OR10N;component/icon.ico">
 
     <Window.ContextMenu>
         <ContextMenu x:Name="MainContextMenu">

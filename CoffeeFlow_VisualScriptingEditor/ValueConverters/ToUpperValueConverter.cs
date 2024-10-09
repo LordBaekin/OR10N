@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace CoffeeFlow.ValueConverters
+namespace OR10N.ValueConverters
 {
     public class ToUpperValueConverter : IValueConverter
     {

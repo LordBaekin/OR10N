@@ -1,9 +1,9 @@
 ﻿using System.IO;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Ioc;
-using CoffeeFlow.Base;
-using CoffeeFlow.Nodes;
-using CoffeeFlow.ViewModel;
+using OR10N.Base;
+using OR10N.Nodes;
+using OR10N.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,9 +19,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using CoffeeFlow.Views;
+using OR10N.Views;
 
-namespace CoffeeFlow
+namespace OR10N
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -141,7 +141,7 @@ namespace CoffeeFlow
 
             // Get all types in the Nodes namespace
             var nodeTypeList = typeof(MainWindow).Assembly.GetTypes()
-                .Where(t => t.Namespace == "CoffeeFlow.Nodes" && t.IsClass)
+                .Where(t => t.Namespace == "OR10N.Nodes" && t.IsClass)
                 .Select(t => t.Name)
                 .ToList();
 

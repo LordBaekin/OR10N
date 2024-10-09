@@ -11,7 +11,7 @@ using System.Xml.Serialization;
 namespace UnityFlow
 {
     /**********************************************************************************************************
-     *             Logic to handle the reading of a XML node flowchart made with CoffeeFlow, 
+     *             Logic to handle the reading of a XML node flowchart made with OR10N, 
      *             allows node traversal, firing triggers and calling of functions on the class that the nodes belong to after having
      *             added the class with AddCaller([instance of class])
      *                                                      * Nick @ http://immersivenick.wordpress.com 

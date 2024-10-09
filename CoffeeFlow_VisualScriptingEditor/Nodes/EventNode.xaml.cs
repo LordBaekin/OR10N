@@ -1,7 +1,7 @@
-﻿using CoffeeFlow.Base;
-using CoffeeFlow.ViewModel;
+﻿using OR10N.Base;
+using OR10N.ViewModel;
 
-namespace CoffeeFlow.Nodes
+namespace OR10N.Nodes
 {
     public partial class EventNode : NodeViewModel
     {
