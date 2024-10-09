@@ -843,6 +843,10 @@ namespace CoffeeFlow.ViewModel
 
         public MainViewModel()
         {
+            // Initialization logic for DebugList
+            DebugList = new ObservableCollection<string>();
+            LogStatus("DebugList initialized.");
+
             LogStatus("Initializing MainViewModel...");
 
             try
@@ -856,10 +860,6 @@ namespace CoffeeFlow.ViewModel
 
                 instance = this;
                 LogStatus("MainViewModel instance assigned.");
-
-                // Initialization logic for DebugList
-                DebugList = new ObservableCollection<string>();
-                LogStatus("DebugList initialized.");
 
                 // Initialize node wrappers
                 LogStatus("Calling InitializeNodeWrappers...");
