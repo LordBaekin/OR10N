@@ -26,6 +26,7 @@ namespace CoffeeFlow.Views
         {
             InitializeComponent();
             //DataContext = this;
+            this.Topmost = true;
         }
     }
 }
