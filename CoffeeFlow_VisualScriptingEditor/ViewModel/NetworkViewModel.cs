@@ -53,8 +53,9 @@ namespace CoffeeFlow.ViewModel
         // RelayCommands for Undo/Redo
         public RelayCommand UndoCommand { get; }
         public RelayCommand RedoCommand { get; }
-       
 
+        // Get MainViewModel instance (you can adjust this to how you're managing the MainViewModel)
+        MainViewModel mainViewModel = MainViewModel.Instance;
         public class UndoableAction
         {
             public Action DoAction { get; }
@@ -196,15 +197,14 @@ namespace CoffeeFlow.ViewModel
 
             return perlScript.ToString();
         }
-
+        
 
         // Modify the NetworkViewModel class to add nodes dynamically from parsed content.
         public void AddParsedNode(string nodeName, string nodeType, string body)
         {
             NodeViewModel nodeToAdd = null;
 
-            // Get MainViewModel instance (you can adjust this to how you're managing the MainViewModel)
-            MainViewModel mainViewModel = MainViewModel.Instance;
+           
 
             // Create a new node for function, loop, or conditional
             switch (nodeType)
@@ -849,7 +849,7 @@ namespace CoffeeFlow.ViewModel
             return null;
         }
 
-        public NetworkViewModel()
+        public NetworkViewModel(MainViewModel mainViewModel)
         {
             AddedNodesOrder = new List<NodeViewModel>();
             RemovedNodesOrder = new List<NodeViewModel>();
@@ -861,6 +861,7 @@ namespace CoffeeFlow.ViewModel
 
             // Correctly instantiate NodeFactory with the MainViewModel singleton instance
             nodeFactory = new NodeFactory(MainViewModel.Instance);
+            this.mainViewModel = mainViewModel;
         }
 
         // Add a new undoable action to the stack

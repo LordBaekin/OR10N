@@ -32,16 +32,15 @@ namespace CoffeeFlow.ViewModel
         public RelayCommand UndoCommand { get; }
         public RelayCommand RedoCommand { get; }
 
-        private static MainViewModel instance = new MainViewModel();
+        private static MainViewModel instance = null;
         public static MainViewModel Instance
         {
             get
             {
                 if (instance == null)
                 {
-                    throw new System.ArgumentException("Trying to access static MainViewModel instance while it has not been assigned yet");
+                    instance = new MainViewModel();
                 }
-
                 return instance;
             }
         }
@@ -60,7 +59,7 @@ namespace CoffeeFlow.ViewModel
             }
         }
 
-        private ObservableCollection<NodeWrapper> methods = null;
+        private ObservableCollection<NodeWrapper> methods = new ObservableCollection<NodeWrapper>();
         public ObservableCollection<NodeWrapper> Methods
         {
             get
@@ -74,7 +73,7 @@ namespace CoffeeFlow.ViewModel
             }
         }
 
-        private ObservableCollection<NodeWrapper> variables = null;
+        private ObservableCollection<NodeWrapper> variables = new ObservableCollection<NodeWrapper>();
         public ObservableCollection<NodeWrapper> Variables
         {
             get
@@ -222,27 +221,38 @@ namespace CoffeeFlow.ViewModel
 
         public void AddNewTrigger()
         {
-            if (NewTriggerName != "")
+            try
             {
-                NodeWrapper newTrigger = new NodeWrapper();
-                newTrigger.NodeName = NewTriggerName;
-                newTrigger.TypeOfNode = NodeType.RootNode;
+                if (!string.IsNullOrWhiteSpace(NewTriggerName))
+                {
+                    NodeWrapper newTrigger = new NodeWrapper();
+                    newTrigger.NodeName = NewTriggerName;
+                    newTrigger.TypeOfNode = NodeType.RootNode;
 
-                Triggers.Add(newTrigger);  // Add to Triggers
+                    Triggers.Add(newTrigger);
+                    LogStatus($"Added new trigger: {NewTriggerName}");
 
-                // Create an undoable action for adding the node
-                var undoAction = new UndoableAction(
-                    doAction: () => Triggers.Add(newTrigger),  // Redo adding
-                    undoAction: () => Triggers.Remove(newTrigger)  // Undo adding
-                );
+                    var undoAction = new UndoableAction(
+                        doAction: () => Triggers.Add(newTrigger),
+                        undoAction: () => Triggers.Remove(newTrigger)
+                    );
 
-                // Push this action onto the undo stack
-                AddUndoableAction(undoAction);
+                    AddUndoableAction(undoAction);
 
-                NewTriggerName = "";
-                RefreshCommandStates();
+                    NewTriggerName = "";
+                    RefreshCommandStates();
+                }
+                else
+                {
+                    LogStatus("NewTriggerName is empty. Cannot add trigger.");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogStatus($"Error while adding trigger: {ex.Message}");
             }
         }
+
 
 
         private void openLocalizationLoadPanelUI()
@@ -286,65 +296,79 @@ namespace CoffeeFlow.ViewModel
         }
 
         public void OpenCode(string file)
-        {
-            string extension = System.IO.Path.GetExtension(file).ToLower();  // Correct Path usage
+{
+    LogStatus($"Starting to parse file: {file}");
+    string extension = System.IO.Path.GetExtension(file).ToLower();
 
-            // Decide how to parse based on the file type
-            switch (extension)
-            {
-                case ".cs":
-                    GetMethods(file, isClassFileName);
-                    GetVariables(file, isClassFileName);
-                    break;
-                case ".pl":
-                    GetPerlMethods(file);  // Perl support
-                    break;
-                case ".lua":
-                    GetLuaMethods(file);   // Lua support
-                    break;
-                case ".json":
-                    GetJSONMethods(file);  // JSON support
-                    break;
-                default:
-                    LogStatus($"Unsupported file extension: {extension}");
-                    break;
-            }
-        }
+    switch (extension)
+    {
+        case ".cs":
+            LogStatus("Parsing C# file...");
+            GetMethods(file, isClassFileName);
+            GetVariables(file, isClassFileName);
+            LogStatus("Finished parsing C# file.");
+            break;
+        case ".pl":
+            LogStatus("Parsing Perl file...");
+            GetPerlMethods(file);
+            LogStatus("Finished parsing Perl file.");
+            break;
+        case ".lua":
+            LogStatus("Parsing Lua file...");
+            GetLuaMethods(file);
+            LogStatus("Finished parsing Lua file.");
+            break;
+        case ".json":
+            LogStatus("Parsing JSON file...");
+            GetJSONMethods(file);
+            LogStatus("Finished parsing JSON file.");
+            break;
+        default:
+            LogStatus($"Unsupported file extension: {extension}");
+            break;
+    }
+}
+
 
         private void OpenLocalization()
         {
-            Microsoft.Win32.OpenFileDialog openFileDialog1 = new Microsoft.Win32.OpenFileDialog();  // Fully qualified
+            LogStatus("Opening localization file dialog...");
+            Microsoft.Win32.OpenFileDialog openFileDialog1 = new Microsoft.Win32.OpenFileDialog();
 
             openFileDialog1.Filter = "JSON Files (.json)|*.json|All Files (*.*)|*.*";
             openFileDialog1.FilterIndex = 1;
-
-            openFileDialog1.Multiselect = false;
 
             bool? userClickedOK = openFileDialog1.ShowDialog();
 
             if (userClickedOK == true)
             {
                 string path = openFileDialog1.FileName;
-                string json = File.ReadAllText(path);
+                LogStatus($"Selected localization file: {path}");
                 try
                 {
+                    string json = File.ReadAllText(path);
                     LocalizationData data = JsonConvert.DeserializeObject<LocalizationData>(json);
                     LocalizationStrings.Clear();
 
                     foreach (var item in data.Items)
                     {
                         LocalizationStrings.Add(item);
+                        LogStatus($"Added localization item: {item.Key}");
                     }
 
-                    LogStatus("Successfully parsed " + LocalizationStrings.Count + " localization keys", true);
+                    LogStatus("Localization data loaded successfully.", true);
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    LogStatus("JSON File is not in the correct format", true);
-                    throw;
+                    LogStatus($"Error reading localization file: {ex.Message}");
                 }
             }
+            else
+            {
+                LogStatus("User canceled localization file selection.");
+            }
         }
+
 
         private RelayCommand _OpenDebug;
         public RelayCommand OpenDebugCommand
@@ -360,61 +384,72 @@ namespace CoffeeFlow.ViewModel
 
         public void GetMethods(string filename, bool isClassNameOnly = false)
         {
-            string className = System.IO.Path.GetFileNameWithoutExtension(filename);  // Correct Path usage
-            var syntaxTree = SyntaxTree.ParseFile(filename);
-            var root = syntaxTree.GetRoot();
-
-            var classes = root.DescendantNodes().OfType<ClassDeclarationSyntax>();
-
-            foreach (var classNode in classes)
+            LogStatus($"Extracting methods from file: {filename}");
+            try
             {
-                string cname = classNode.Identifier.ToString();
+                string className = System.IO.Path.GetFileNameWithoutExtension(filename);
+                var syntaxTree = SyntaxTree.ParseFile(filename);
+                var root = syntaxTree.GetRoot();
 
-                // Skip this class entirely if it doesn't match the class name of the code file
-                if (isClassNameOnly && cname != className)
-                    continue;
+                var classes = root.DescendantNodes().OfType<ClassDeclarationSyntax>();
 
-                // Avoid duplicate local variable 'methods'
-                IEnumerable<MethodDeclarationSyntax> methodDeclarations = classNode
-                    .DescendantNodes()
-                    .OfType<MethodDeclarationSyntax>()
-                    .ToList();
-
-                foreach (var method in methodDeclarations)
+                foreach (var classNode in classes)
                 {
-                    NodeWrapper node = new NodeWrapper();
-                    node.NodeName = method.Identifier.ToString();
-                    node.CallingClass = cname;
-
-                    bool isPublic = false;
-                    foreach (var mod in method.Modifiers)
+                    string cname = classNode.Identifier.ToString();
+                    if (isClassNameOnly && cname != className)
                     {
-                        if (mod.Kind == SyntaxKind.PublicKeyword)
-                        {
-                            isPublic = true;
-                        }
-                    }
-
-                    if (!isPublic)
+                        LogStatus($"Skipping class: {cname} as it does not match the file class name.");
                         continue;
-
-                    ParameterListSyntax parameters = method.ParameterList;
-
-                    foreach (var param in parameters.Parameters)
-                    {
-                        Argument a = new Argument
-                        {
-                            Name = param.Identifier.ToString(),
-                            ArgTypeString = param.Type.ToString()
-                        };
-                        node.Arguments.Add(a);
                     }
 
-                    node.TypeOfNode = NodeType.MethodNode;
-                    Methods.Add(node);
+                    LogStatus($"Found class: {cname}");
+
+                    var methodDeclarations = classNode.DescendantNodes().OfType<MethodDeclarationSyntax>().ToList();
+
+                    foreach (var method in methodDeclarations)
+                    {
+                        bool isPublic = method.Modifiers.Any(mod => mod.Kind == SyntaxKind.PublicKeyword);
+
+                        if (!isPublic)
+                        {
+                            LogStatus($"Skipping non-public method: {method.Identifier}");
+                            continue;
+                        }
+
+                        NodeWrapper node = new NodeWrapper
+                        {
+                            NodeName = method.Identifier.ToString(),
+                            CallingClass = cname,
+                            TypeOfNode = NodeType.MethodNode
+                        };
+
+                        LogStatus($"Adding method: {node.NodeName} from class: {cname}");
+
+                        ParameterListSyntax parameters = method.ParameterList;
+                        foreach (var param in parameters.Parameters)
+                        {
+                            Argument a = new Argument
+                            {
+                                Name = param.Identifier.ToString(),
+                                ArgTypeString = param.Type.ToString()
+                            };
+                            node.Arguments.Add(a);
+                            LogStatus($"Added parameter: {a.Name} of type: {a.ArgTypeString} to method: {node.NodeName}");
+                        }
+
+                        Methods.Add(node);
+                        LogStatus($"Method added: {node.NodeName} with {node.Arguments.Count} parameters.");
+                    }
                 }
+
+                LogStatus("Method extraction completed.");
+            }
+            catch (Exception ex)
+            {
+                LogStatus($"Error while extracting methods: {ex.Message}");
             }
         }
+
 
         public void GetPerlMethods(string filename)
         {
@@ -604,44 +639,44 @@ namespace CoffeeFlow.ViewModel
             }
         }
 
+
+
         private void AddNodeToList(NodeWrapper node)
         {
+            LogStatus($"Adding node: {node.NodeName}, Type: {node.TypeOfNode}");
+
             if (node.TypeOfNode == NodeType.MethodNode)
+            {
                 Methods.Add(node);
+                LogStatus($"Node added to Methods: {node.NodeName}");
+            }
             else if (node.TypeOfNode == NodeType.ConditionNode || node.TypeOfNode == NodeType.RootNode)
+            {
                 Triggers.Add(node);
+                LogStatus($"Node added to Triggers: {node.NodeName}");
+            }
             else if (node.TypeOfNode == NodeType.VariableNode)
+            {
                 Variables.Add(node);
+                LogStatus($"Node added to Variables: {node.NodeName}");
+            }
         }
+
 
         public MainViewModel()
         {
-
-
-            // Initialize DebugList
-            DebugList = new ObservableCollection<string>();
-
-            LogStatus("MainViewModel initialized.");
-
-
-            // Ensure only one instance of MainViewModel exists
             if (instance != null && instance != this)
             {
-                LogStatus("There's already a Game Manager in the scene, destroying this one.");
+                throw new InvalidOperationException("An instance of MainViewModel already exists.");
             }
-            else
-            {
-                instance = this;
-            }
+            instance = this;
 
-            // Initialize DebugList
+            // Initialization logic
             DebugList = new ObservableCollection<string>();
             LogStatus("MainViewModel initialized.");
-
-            // Initialize nodes and add them to Triggers
             InitializeNodeWrappers();
 
-            // Initialize Undo/Redo commands after other setup
+            // Initialize Undo/Redo commands
             UndoCommand = new RelayCommand(Undo, CanUndo);
             RedoCommand = new RelayCommand(Redo, CanRedo);
         }
@@ -681,27 +716,37 @@ namespace CoffeeFlow.ViewModel
             RefreshCommandStates();
         }
 
-        private void Undo()
+        public void Undo()
         {
+            LogStatus("Attempting to undo last action...");
             if (undoStack.Any())
             {
                 var action = undoStack.Pop();
                 action.Undo();
                 redoStack.Push(action);
-                Console.WriteLine("Undo performed.");
+                LogStatus("Undo performed successfully.", true);
                 RefreshCommandStates();
+            }
+            else
+            {
+                LogStatus("Undo action failed: No actions to undo.");
             }
         }
 
-        private void Redo()
+        public void Redo()
         {
+            LogStatus("Attempting to redo last undone action...");
             if (redoStack.Any())
             {
                 var action = redoStack.Pop();
                 action.Execute();
                 undoStack.Push(action);
-                Console.WriteLine("Redo performed.");
+                LogStatus("Redo performed successfully.", true);
                 RefreshCommandStates();
+            }
+            else
+            {
+                LogStatus("Redo action failed: No actions to redo.");
             }
         }
 
@@ -714,23 +759,22 @@ namespace CoffeeFlow.ViewModel
             RedoCommand.RaiseCanExecuteChanged();
         }
 
-        public void LogStatus(string status, bool showInStatusLabel = false)
+        public void LogStatus(string message, bool showInStatusLabel = false, [CallerMemberName] string caller = "")
         {
-            // Ensure DebugList is not null
-            if (DebugList == null)
-            {
-                DebugList = new ObservableCollection<string>();
-            }
+            string logMessage = $"{DateTime.Now:HH:mm:ss} [{caller}] {message}";
 
-            // Add status to the DebugList
-            DebugList.Add(status);
+            DebugList.Add(logMessage);
 
             if (showInStatusLabel)
             {
-                StatusLabel = status;
+                StatusLabel = message;
             }
 
-
+            Console.WriteLine(logMessage); // Optional: Output to console for debugging purposes.
         }
+
+
+
     }
 }
+
