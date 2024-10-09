@@ -500,11 +500,16 @@ namespace CoffeeFlow.ViewModel
             LogStatus($"Extracting methods from file: {filename}");
             try
             {
-                string className = System.IO.Path.GetFileNameWithoutExtension(filename);
+                string className = Path.GetFileNameWithoutExtension(filename);
                 var syntaxTree = SyntaxTree.ParseFile(filename);
                 var root = syntaxTree.GetRoot();
-
                 var classes = root.DescendantNodes().OfType<ClassDeclarationSyntax>();
+
+                if (!classes.Any())
+                {
+                    LogStatus($"No classes found in file: {filename}.", true);
+                    return;
+                }
 
                 foreach (var classNode in classes)
                 {
@@ -518,11 +523,9 @@ namespace CoffeeFlow.ViewModel
                     LogStatus($"Found class: {cname}");
 
                     var methodDeclarations = classNode.DescendantNodes().OfType<MethodDeclarationSyntax>().ToList();
-
                     foreach (var method in methodDeclarations)
                     {
                         bool isPublic = method.Modifiers.Any(mod => mod.Kind == SyntaxKind.PublicKeyword);
-
                         if (!isPublic)
                         {
                             LogStatus($"Skipping non-public method: {method.Identifier}");
@@ -535,8 +538,6 @@ namespace CoffeeFlow.ViewModel
                             CallingClass = cname,
                             TypeOfNode = NodeType.MethodNode
                         };
-
-                        LogStatus($"Adding method: {node.NodeName} from class: {cname}");
 
                         ParameterListSyntax parameters = method.ParameterList;
                         foreach (var param in parameters.Parameters)
@@ -557,11 +558,16 @@ namespace CoffeeFlow.ViewModel
 
                 LogStatus("Method extraction completed.");
             }
+            catch (IOException ex)
+            {
+                LogStatus($"I/O error while reading file: {filename}. Error: {ex.Message}");
+            }
             catch (Exception ex)
             {
                 LogStatus($"Error while extracting methods: {ex.Message}");
             }
         }
+
 
 
         public void GetPerlMethods(string filename)
@@ -596,13 +602,19 @@ namespace CoffeeFlow.ViewModel
                         LogStatus($"Added Perl variable: {variableMatch.Value}");
                     }
                 }
+
                 LogStatus("Perl method extraction completed.");
+            }
+            catch (FileNotFoundException ex)
+            {
+                LogStatus($"Perl file not found: {filename}. Error: {ex.Message}");
             }
             catch (Exception ex)
             {
                 LogStatus($"Error while extracting Perl methods: {ex.Message}");
             }
         }
+
 
 
         public void GetLuaMethods(string filename)
@@ -639,11 +651,16 @@ namespace CoffeeFlow.ViewModel
                 }
                 LogStatus("Lua method extraction completed.");
             }
+            catch (IOException ex)
+            {
+                LogStatus($"I/O error while reading Lua file: {filename}. Error: {ex.Message}");
+            }
             catch (Exception ex)
             {
                 LogStatus($"Error while extracting Lua methods: {ex.Message}");
             }
         }
+
 
 
         public void GetSQLMethods(string filename)
@@ -880,7 +897,7 @@ namespace CoffeeFlow.ViewModel
                 throw;  // Rethrow the exception to ensure it propagates after logging
             }
         }
-
+       
 
         private void InitializeNodeWrappers()
         {
@@ -927,8 +944,26 @@ namespace CoffeeFlow.ViewModel
             LogStatus("Adding an undoable action...");
             try
             {
+                if (action == null)
+                {
+                    LogStatus("Attempted to add a null undoable action.", true);
+                    return;
+                }
+
                 undoStack.Push(action);
+                LogStatus("Undo action added to the stack.");
+
                 redoStack.Clear();  // Clear redo stack when a new action is added
+                LogStatus("Redo stack cleared after adding a new action.");
+
+                // Optional: Limit the size of the undo stack
+                const int MAX_UNDO_ACTIONS = 50;
+                if (undoStack.Count > MAX_UNDO_ACTIONS)
+                {
+                    undoStack = new Stack<UndoableAction>(undoStack.Take(MAX_UNDO_ACTIONS));
+                    LogStatus($"Undo stack trimmed to maintain maximum size of {MAX_UNDO_ACTIONS} actions.");
+                }
+
                 RefreshCommandStates();
                 LogStatus("Undoable action added successfully.");
             }
@@ -940,39 +975,68 @@ namespace CoffeeFlow.ViewModel
 
 
 
+
         public void Undo()
         {
             LogStatus("Attempting to undo last action...");
-            if (undoStack.Any())
+            try
             {
-                var action = undoStack.Pop();
-                action.Undo();
-                redoStack.Push(action);
-                LogStatus("Undo performed successfully.", true);
-                RefreshCommandStates();
+                if (undoStack.Any())
+                {
+                    var action = undoStack.Pop();
+                    LogStatus("Popped action from the undo stack.");
+
+                    action.Undo();
+                    LogStatus("Action undone successfully.");
+
+                    redoStack.Push(action);
+                    LogStatus("Action pushed to the redo stack.");
+
+                    RefreshCommandStates();
+                    LogStatus("Command states refreshed after undo.");
+                }
+                else
+                {
+                    LogStatus("Undo action failed: No actions to undo.");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                LogStatus("Undo action failed: No actions to undo.");
+                LogStatus($"Error during undo operation: {ex.Message}");
             }
         }
+
 
         public void Redo()
         {
             LogStatus("Attempting to redo last undone action...");
-            if (redoStack.Any())
+            try
             {
-                var action = redoStack.Pop();
-                action.Execute();
-                undoStack.Push(action);
-                LogStatus("Redo performed successfully.", true);
-                RefreshCommandStates();
+                if (redoStack.Any())
+                {
+                    var action = redoStack.Pop();
+                    LogStatus("Popped action from the redo stack.");
+
+                    action.Execute();
+                    LogStatus("Action re-executed successfully.");
+
+                    undoStack.Push(action);
+                    LogStatus("Action pushed back to the undo stack.");
+
+                    RefreshCommandStates();
+                    LogStatus("Command states refreshed after redo.");
+                }
+                else
+                {
+                    LogStatus("Redo action failed: No actions to redo.");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                LogStatus("Redo action failed: No actions to redo.");
+                LogStatus($"Error during redo operation: {ex.Message}");
             }
         }
+
 
         private bool CanUndo()
         {

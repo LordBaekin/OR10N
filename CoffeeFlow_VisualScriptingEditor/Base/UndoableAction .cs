@@ -18,7 +18,7 @@ public class UndoableAction
     }
 
     public void Execute() => DoAction();
-    public void Undo() => UndoAction();
+        public void Undo() => UndoAction();
 
 }
 }
