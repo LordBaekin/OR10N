@@ -4,7 +4,7 @@ using System.Windows.Input;
 using OR10N.Nodes;
 using OR10N.ViewModel;
 using UnityFlow;
-
+using FlowParser;  // Ensure this is imported for the Log class
 
 namespace OR10N.Base
 {
@@ -16,18 +16,18 @@ namespace OR10N.Base
         public NodeFactory(MainViewModel mainViewModel)
         {
             this.mainViewModel = mainViewModel;
-            MainViewModel.Instance.LogStatus("NodeFactory initialized.");
+            LogStatus("NodeFactory initialized.");
         }
 
         public NodeViewModel CreateNode(NodeWrapper nodeWrapper)
         {
-            MainViewModel.Instance.LogStatus($"Creating node of type: {nodeWrapper.TypeOfNode} with name: {nodeWrapper.NodeName}.");
+            LogStatus($"Creating node of type: {nodeWrapper.TypeOfNode} with name: {nodeWrapper.NodeName}.");
             NodeViewModel nodeToAdd = null;
 
             try
             {
                 Point p = DeterminePosition();
-                MainViewModel.Instance.LogStatus($"Position determined for new node: {p}.");
+                LogStatus($"Position determined for new node: {p}.");
 
                 switch (nodeWrapper.TypeOfNode)
                 {
@@ -53,13 +53,13 @@ namespace OR10N.Base
                         nodeToAdd = CreateSetNode(p, nodeWrapper);
                         break;
                     default:
-                        MainViewModel.Instance.LogStatus($"Unsupported node type: {nodeWrapper.TypeOfNode}. Node creation skipped.");
+                        LogStatus($"Unsupported node type: {nodeWrapper.TypeOfNode}. Node creation skipped.");
                         break;
                 }
             }
             catch (Exception ex)
             {
-                MainViewModel.Instance.LogStatus($"Error during node creation for {nodeWrapper.NodeName} of type {nodeWrapper.TypeOfNode}: {ex.Message}");
+                LogStatus($"Error during node creation for {nodeWrapper.NodeName} of type {nodeWrapper.TypeOfNode}: {ex.Message}");
             }
 
             return nodeToAdd;
@@ -75,27 +75,27 @@ namespace OR10N.Base
                 if (main.IsNodePopupVisible)
                 {
                     p = Mouse.GetPosition(main);
-                    MainViewModel.Instance.LogStatus("Node popup is visible. Using mouse position for node placement.");
+                    LogStatus("Node popup is visible. Using mouse position for node placement.");
                 }
                 else
                 {
                     int increment = random.Next(-400, 400);
                     p = new Point(p.X + increment, p.Y + increment);
-                    MainViewModel.Instance.LogStatus($"Node popup is not visible. Using random offset for node placement: {increment}.");
+                    LogStatus($"Node popup is not visible. Using random offset for node placement: {increment}.");
                 }
 
                 return p;
             }
             catch (Exception ex)
             {
-                MainViewModel.Instance.LogStatus($"Error determining position for new node: {ex.Message}");
+                LogStatus($"Error determining position for new node: {ex.Message}");
                 return new Point(0, 0); // Return a default position in case of error
             }
         }
 
         private ActionNode CreateActionNode(Point p, NodeWrapper nodeWrapper)
         {
-            MainViewModel.Instance.LogStatus($"Creating ActionNode at position {p} with name: {nodeWrapper.NodeName}.");
+            LogStatus($"Creating ActionNode at position {p} with name: {nodeWrapper.NodeName}.");
             ActionNode n = new ActionNode(mainViewModel, "SomeAction", "Some dialogue");
             n.Margin = new Thickness(p.X, p.Y, 0, 0);
             return n;
@@ -103,7 +103,7 @@ namespace OR10N.Base
 
         private EventNode CreateEventNode(Point p, NodeWrapper nodeWrapper)
         {
-            MainViewModel.Instance.LogStatus($"Creating EventNode at position {p} with name: {nodeWrapper.NodeName}.");
+            LogStatus($"Creating EventNode at position {p} with name: {nodeWrapper.NodeName}.");
             EventNode n = new EventNode(mainViewModel, "SomeEvent");
             n.Margin = new Thickness(p.X, p.Y, 0, 0);
             return n;
@@ -111,7 +111,7 @@ namespace OR10N.Base
 
         private RootNode CreateRootNode(Point p, NodeWrapper nodeWrapper)
         {
-            MainViewModel.Instance.LogStatus($"Creating RootNode at position {p} with name: {nodeWrapper.NodeName}.");
+            LogStatus($"Creating RootNode at position {p} with name: {nodeWrapper.NodeName}.");
             RootNode n = new RootNode(mainViewModel);
             n.NodeName = nodeWrapper.NodeName;
             n.Margin = new Thickness(p.X, p.Y, 0, 0);
@@ -120,7 +120,7 @@ namespace OR10N.Base
 
         private ConditionNode CreateConditionNode(Point p, NodeWrapper nodeWrapper)
         {
-            MainViewModel.Instance.LogStatus($"Creating ConditionNode at position {p} with name: {nodeWrapper.NodeName}.");
+            LogStatus($"Creating ConditionNode at position {p} with name: {nodeWrapper.NodeName}.");
             ConditionNode n = new ConditionNode(mainViewModel);
             n.NodeName = nodeWrapper.NodeName;
             n.Margin = new Thickness(p.X, p.Y, 0, 0);
@@ -129,7 +129,7 @@ namespace OR10N.Base
 
         private SetNode CreateSetNode(Point p, NodeWrapper nodeWrapper)
         {
-            MainViewModel.Instance.LogStatus($"Creating SetNode at position {p} with name: {nodeWrapper.NodeName}.");
+            LogStatus($"Creating SetNode at position {p} with name: {nodeWrapper.NodeName}.");
             SetNode n = new SetNode(mainViewModel);
             n.NodeName = nodeWrapper.NodeName;
             n.Margin = new Thickness(p.X, p.Y, 0, 0);
@@ -138,7 +138,7 @@ namespace OR10N.Base
 
         private DynamicNode CreateMethodNode(Point p, NodeWrapper nodeWrapper)
         {
-            MainViewModel.Instance.LogStatus($"Creating MethodNode at position {p} with name: {nodeWrapper.NodeName}.");
+            LogStatus($"Creating MethodNode at position {p} with name: {nodeWrapper.NodeName}.");
             DynamicNode n = new DynamicNode(mainViewModel);
             n.NodeName = nodeWrapper.NodeName;
 
@@ -147,12 +147,12 @@ namespace OR10N.Base
                 foreach (var arg in nodeWrapper.Arguments)
                 {
                     n.AddArgument(arg.ArgTypeString, arg.Name, false, 0, null);
-                    MainViewModel.Instance.LogStatus($"Added argument {arg.Name} of type {arg.ArgTypeString} to MethodNode: {nodeWrapper.NodeName}.");
+                    LogStatus($"Added argument {arg.Name} of type {arg.ArgTypeString} to MethodNode: {nodeWrapper.NodeName}.");
                 }
             }
             catch (Exception ex)
             {
-                MainViewModel.Instance.LogStatus($"Error adding arguments to MethodNode {nodeWrapper.NodeName}: {ex.Message}");
+                LogStatus($"Error adding arguments to MethodNode {nodeWrapper.NodeName}: {ex.Message}");
             }
 
             n.Margin = new Thickness(p.X, p.Y, 0, 0);
@@ -162,7 +162,7 @@ namespace OR10N.Base
 
         private VariableNode CreateVariableNode(Point p, NodeWrapper nodeWrapper)
         {
-            MainViewModel.Instance.LogStatus($"Creating VariableNode at position {p} with name: {nodeWrapper.NodeName}.");
+            LogStatus($"Creating VariableNode at position {p} with name: {nodeWrapper.NodeName}.");
             VariableNode n = new VariableNode(mainViewModel);
             n.NodeName = nodeWrapper.NodeName;
             n.Type = nodeWrapper.BaseAssemblyType;

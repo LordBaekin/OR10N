@@ -16,7 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using UnityFlow;
-using FlowParser;
+using static UnityFlow.FlowParser;
 
 namespace OR10N.Base
 {
@@ -281,7 +281,7 @@ namespace OR10N.Base
                 n.DisableInputOnParameter(paramIndex);
             }
 
-            Log.Info("Adding linked parameter connection on " + n.NodeName + ", parameter " + paramIndex);
+            MainViewModel.Instance.LogStatus("Adding linked parameter connection on " + n.NodeName + ", parameter " + paramIndex);
 
         }
 
@@ -292,7 +292,7 @@ namespace OR10N.Base
 
             n.ConnectedToVariableName = v.NodeName;
             n.ConnectedToVariableCallerClassName = v.CallingClass;
-            Log.Info("Connected bool variable to Condition bool input");
+            MainViewModel.Instance.LogStatus("Connected bool variable to Condition bool input");
 
         }
 
@@ -319,7 +319,7 @@ namespace OR10N.Base
                 }
             }
 
-            //Log.Info("Removing linked parameter connection on " + n.NodeName + ", parameter " + paramIndex);
+            //MainViewModel.Instance.LogStatus("Removing linked parameter connection on " + n.NodeName + ", parameter " + paramIndex);
         }
 
         public void UnConnect()
@@ -361,18 +361,18 @@ namespace OR10N.Base
             target.IsConnected = true;
             source.IsConnected = true;
 
-            Log.Info("Connected node " + source.ParentNode + " (" + source.ParentNode.ID + ") to " + target.ParentNode + "(" + target.ParentNode.ID + ")");
+            MainViewModel.Instance.LogStatus("Connected node " + source.ParentNode + " (" + source.ParentNode.ID + ") to " + target.ParentNode + "(" + target.ParentNode.ID + ")");
 
             //variable as a method parameter
             if (source.ParentNode.NodeType == NodeType.VariableNode && target.ParentNode.NodeType == NodeType.MethodNode)
             {
                 source.ConnectMethodToNamedVariable(target, source);
-                Log.Info("Connected variable to named parameter");
+                MainViewModel.Instance.LogStatus("Connected variable to named parameter");
             }
             if (source.ParentNode.NodeType == NodeType.MethodNode && target.ParentNode.NodeType == NodeType.VariableNode)
             {
                 source.ConnectMethodToNamedVariable(source, target);
-                Log.Info("Connected variable to named parameter");
+                MainViewModel.Instance.LogStatus("Connected variable to named parameter");
             }
 
             //

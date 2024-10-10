@@ -27,69 +27,69 @@ namespace OR10N.FlowParser
         // Add a new undoable action to the stack
         public void AddUndoableAction(UndoableAction action)
         {
-            Log.Info("Adding a new undoable action...");
+            LogStatus("Adding a new undoable action...");
             try
             {
                 undoStack.Push(action);
                 redoStack.Clear();  // Clear redo stack when a new action is added
                 RefreshCommandStates();
-                Log.Info("Undoable action added successfully and redo stack cleared.");
+                LogStatus("Undoable action added successfully and redo stack cleared.");
             }
             catch (Exception ex)
             {
-                Log.Error($"Error while adding undoable action: {ex.Message}");
+                LogStatus($"Error while adding undoable action: {ex.Message}");
             }
         }
 
         // Perform Undo
         public void Undo()
         {
-            Log.Info("Attempting to perform Undo...");
+            LogStatus("Attempting to perform Undo...");
             try
             {
                 if (undoStack.Count > 0)
                 {
                     var action = undoStack.Pop();
-                    Log.Info("Undo action found, executing Undo...");
+                    LogStatus("Undo action found, executing Undo...");
                     action.Undo();
                     redoStack.Push(action);
-                    Log.Info("Undo executed successfully and action pushed to redo stack.");
+                    LogStatus("Undo executed successfully and action pushed to redo stack.");
                     RefreshCommandStates();
                 }
                 else
                 {
-                    Log.Warning("No actions available to undo.");
+                    LogStatus("No actions available to undo.");
                 }
             }
             catch (Exception ex)
             {
-                Log.Error($"Error during Undo operation: {ex.Message}");
+                LogStatus($"Error during Undo operation: {ex.Message}");
             }
         }
 
         // Perform Redo
         public void Redo()
         {
-            Log.Info("Attempting to perform Redo...");
+            LogStatus("Attempting to perform Redo...");
             try
             {
                 if (redoStack.Count > 0)
                 {
                     var action = redoStack.Pop();
-                    Log.Info("Redo action found, executing Redo...");
+                    LogStatus("Redo action found, executing Redo...");
                     action.Execute();
                     undoStack.Push(action);
-                    Log.Info("Redo executed successfully and action pushed to undo stack.");
+                    LogStatus("Redo executed successfully and action pushed to undo stack.");
                     RefreshCommandStates();
                 }
                 else
                 {
-                    Log.Warning("No actions available to redo.");
+                    LogStatus("No actions available to redo.");
                 }
             }
             catch (Exception ex)
             {
-                Log.Error($"Error during Redo operation: {ex.Message}");
+                LogStatus($"Error during Redo operation: {ex.Message}");
             }
         }
 
@@ -97,7 +97,7 @@ namespace OR10N.FlowParser
         public bool CanUndo()
         {
             bool canUndo = undoStack.Count > 0;
-            Log.Info($"CanUndo check: {canUndo}");
+            LogStatus($"CanUndo check: {canUndo}");
             return canUndo;
         }
 
@@ -105,23 +105,23 @@ namespace OR10N.FlowParser
         public bool CanRedo()
         {
             bool canRedo = redoStack.Count > 0;
-            Log.Info($"CanRedo check: {canRedo}");
+            LogStatus($"CanRedo check: {canRedo}");
             return canRedo;
         }
 
         // Refresh the state of the Undo/Redo commands to enable/disable buttons
         public void RefreshCommandStates()
         {
-            Log.Info("Refreshing command states for Undo/Redo...");
+            LogStatus("Refreshing command states for Undo/Redo...");
             try
             {
                 UndoCommand.RaiseCanExecuteChanged();
                 RedoCommand.RaiseCanExecuteChanged();
-                Log.Info("Command states refreshed successfully.");
+                LogStatus("Command states refreshed successfully.");
             }
             catch (Exception ex)
             {
-                Log.Error($"Error while refreshing command states: {ex.Message}");
+                LogStatus($"Error while refreshing command states: {ex.Message}");
             }
         }
     }
@@ -134,21 +134,21 @@ namespace OR10N.FlowParser
 
         public UndoableAction(Action doAction, Action undoAction)
         {
-            Log.Info("Creating UndoableAction.");
+            LogStatus("Creating UndoableAction.");
             DoAction = doAction;
             UndoAction = undoAction;
-            Log.Info("UndoableAction created.");
+            LogStatus("UndoableAction created.");
         }
 
         public void Execute()
         {
-            Log.Info("Executing UndoableAction.");
+            LogStatus("Executing UndoableAction.");
             DoAction?.Invoke();
         }
 
         public void Undo()
         {
-            Log.Info("Undoing action in UndoableAction.");
+            LogStatus("Undoing action in UndoableAction.");
             UndoAction?.Invoke();
         }
     }

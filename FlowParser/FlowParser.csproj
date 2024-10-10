@@ -48,7 +48,6 @@
     <Compile Include="FlowParser.cs" />
     <Compile Include="LocalizationData.cs" />
     <None Include="LuaParser.lua" />
-    <Compile Include="Log.cs" />
     <Compile Include="NodeWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="parse_perl_script.pl" />
