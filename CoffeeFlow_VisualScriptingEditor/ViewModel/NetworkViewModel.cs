@@ -35,8 +35,7 @@ namespace OR10N.ViewModel
     /**********************************************************************************************************
    *             Logic related to the nodes present on the grid and their connections and related commands
    * 
-   *                                                      * Nick @ http://immersivenick.wordpress.com 
-   *                                                      * Free for non-commercial use
+   *                                                    
    * *********************************************************************************************************/
     public class NetworkViewModel
     {
