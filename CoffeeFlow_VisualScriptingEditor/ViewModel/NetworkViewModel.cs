@@ -30,6 +30,7 @@ using GalaSoft.MvvmLight.Ioc;
 using System.Runtime.CompilerServices;
 
 
+
 namespace OR10N.ViewModel
 {
     /**********************************************************************************************************
@@ -569,6 +570,7 @@ namespace OR10N.ViewModel
             {
                 this.Nodes.Add(nodeToAdd);
                 MainViewModel.Instance.LogStatus("Added node " + nodeToAdd.NodeName + " to grid");
+                MainViewModel.Instance.RaiseCanExecuteChangedForSaveAsLua();
             }
             else
             {
@@ -624,6 +626,8 @@ namespace OR10N.ViewModel
         public void ClearNodes()
         {
             this.Nodes.Clear();
+            MainViewModel.Instance.RaiseCanExecuteChangedForSaveAsLua();
+
             MainViewModel.Instance.LogStatus("Cleared nodes.");
         }
 
@@ -813,6 +817,7 @@ namespace OR10N.ViewModel
                 // Clear any existing nodes before loading new ones.
                 MainViewModel.Instance.LogStatus("Clearing existing nodes...");
                 ClearNodes();
+
                 MainViewModel.Instance.LogStatus("Existing nodes cleared.");
 
                 OpenFileDialog openFileDialog1 = new OpenFileDialog
@@ -879,6 +884,7 @@ namespace OR10N.ViewModel
                                 Nodes.Add(newNode);
                                 MainViewModel.Instance.LogStatus($"Added ConditionNode: {newNode.NodeName}");
                             }
+                            MainViewModel.Instance.RaiseCanExecuteChangedForSaveAsLua();
                         }
                         catch (Exception ex)
                         {
@@ -890,6 +896,9 @@ namespace OR10N.ViewModel
                     MainViewModel.Instance.LogStatus("Connecting nodes...");
                     ConnectNodes();
                     MainViewModel.Instance.LogStatus("Nodes connected successfully.");
+
+                    // Update after all nodes are connected
+                    MainViewModel.Instance.RaiseCanExecuteChangedForSaveAsLua();
                 }
                 else
                 {
@@ -902,6 +911,8 @@ namespace OR10N.ViewModel
             }
             MainViewModel.Instance.LogStatus("LoadNodes process completed.");
         }
+
+
 
         private void ConnectNodes()
         {
@@ -982,6 +993,10 @@ namespace OR10N.ViewModel
                         }
                     }
                 }
+
+                // Call the method to re-evaluate the SaveAsLua command's executable state.
+                MainViewModel.Instance.RaiseCanExecuteChangedForSaveAsLua();
+                MainViewModel.Instance.LogStatus("Re-evaluated SaveAsLua command state after connecting nodes.");
             }
             catch (Exception ex)
             {

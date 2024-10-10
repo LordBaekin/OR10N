@@ -180,14 +180,21 @@ namespace OR10N.ViewModel
         public ObservableCollection<NodeViewModel> Nodes
         {
             get { return nodes; }
-            set
+            private set
             {
                 nodes = value;
                 RaisePropertyChanged(nameof(Nodes));
+                Nodes = new ObservableCollection<NodeViewModel>();
+                Nodes.CollectionChanged += (s, e) => RaiseCanExecuteChangedForSaveAsLua();
             }
+        }
+        public void RaiseCanExecuteChangedForSaveAsLua()
+        {
+            SaveAsLuaCommand?.RaiseCanExecuteChanged();
         }
 
         private RelayCommand _saveAsLuaCommand;
+
         public RelayCommand SaveAsLuaCommand
         {
             get
@@ -662,7 +669,7 @@ namespace OR10N.ViewModel
                 LogStatus($"Lua script generated successfully. Script length: {luaScript.Length} characters.");
 
                 // Save dialog for Lua script
-                Microsoft.Win32.SaveFileDialog saveFileDialog = new Microsoft.Win32.SaveFileDialog
+                SaveFileDialog saveFileDialog = new SaveFileDialog
                 {
                     Filter = "Lua Files (.lua)|*.lua|All Files (*.*)|*.*",
                     FilterIndex = 1
@@ -686,6 +693,7 @@ namespace OR10N.ViewModel
                 LogStatus($"Error during SaveAsLua execution: {ex.Message}");
             }
         }
+
         public string ExportNodesToLua()
         {
             StringBuilder luaScript = new StringBuilder();
@@ -702,7 +710,7 @@ namespace OR10N.ViewModel
                         luaScript.AppendLine("end");
                         LogStatus($"Exported function: {funcNode.NodeName}");
                     }
-                    // Add additional cases for exporting conditionals, loops, etc.
+                    // Add additional cases for exporting other node types as needed.
                 }
                 LogStatus("Node export to Lua completed successfully.");
             }

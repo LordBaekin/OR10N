@@ -146,6 +146,7 @@
     </Compile>
     <Compile Include="Base\UndoableAction .cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="ViewModel\UndoRedoManager.cs" />
     <Compile Include="ValueConverters\EnabledToVisibilityConverter.cs" />
     <Compile Include="ViewModel\LocalizationData.cs" />
     <Compile Include="ViewModel\NodeFactory.cs" />

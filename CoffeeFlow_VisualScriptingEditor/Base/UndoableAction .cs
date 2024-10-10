@@ -26,6 +26,7 @@ namespace OR10N
             try
             {
                 DoAction();
+                MainViewModel.Instance.RaiseCanExecuteChangedForSaveAsLua();
                 _mainViewModel.LogStatus("UndoableAction executed successfully.");
             }
             catch (Exception ex)
@@ -40,6 +41,7 @@ namespace OR10N
             try
             {
                 UndoAction();
+                MainViewModel.Instance.RaiseCanExecuteChangedForSaveAsLua();
                 _mainViewModel.LogStatus("UndoableAction undone successfully.");
             }
             catch (Exception ex)

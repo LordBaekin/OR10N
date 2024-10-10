@@ -7,6 +7,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OR10N", "OR10N.csproj", "{D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlowParser", "..\FlowParser\FlowParser.csproj", "{E2D011AC-8BCE-464E-9E1D-7F63BC823313}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C33F421C-75D8-44AF-9340-475865F4BB5D}"
+	ProjectSection(SolutionItems) = preProject
+		..\EventQueue.cs = ..\EventQueue.cs
+		..\FlowManager.cs = ..\FlowManager.cs
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +30,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2B4686AB-C0A6-40EE-97EC-99D95ECCD054}
 	EndGlobalSection
 EndGlobal
