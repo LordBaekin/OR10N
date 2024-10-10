@@ -27,7 +27,8 @@ using System.Diagnostics;
 using MoonSharp.Interpreter;
 using System.Text.RegularExpressions;
 using GalaSoft.MvvmLight.Ioc;
-
+using System.Runtime.CompilerServices;
+using FlowParser;
 
 namespace OR10N.ViewModel
 {
@@ -62,21 +63,21 @@ namespace OR10N.ViewModel
 
             public UndoableAction(Action doAction, Action undoAction)
             {
-                MainViewModel.Instance.LogStatus("Creating UndoableAction.");
+                Log.Info("Creating UndoableAction.");
                 DoAction = doAction;
                 UndoAction = undoAction;
-                MainViewModel.Instance.LogStatus("UndoableAction created.");
+                Log.Info("UndoableAction created.");
             }
 
             public void Execute()
             {
-                MainViewModel.Instance.LogStatus("Executing UndoableAction.");
+                Log.Info("Executing UndoableAction.");
                 DoAction();
             }
 
             public void Undo()
             {
-                MainViewModel.Instance.LogStatus("Undoing action in UndoableAction.");
+                Log.Info("Undoing action in UndoableAction.");
                 UndoAction();
             }
         }
@@ -86,12 +87,12 @@ namespace OR10N.ViewModel
         {
             get
             {
-                MainViewModel.Instance.LogStatus("Accessing AddNodeToGridCommand...");
+                Log.Info("Accessing AddNodeToGridCommand...");
                 if (_addNodeToGridCommand == null)
                 {
-                    MainViewModel.Instance.LogStatus("Initializing AddNodeToGridCommand...");
+                    Log.Info("Initializing AddNodeToGridCommand...");
                     _addNodeToGridCommand = new RelayCommand<NodeWrapper>(AddNodeToGrid);
-                    MainViewModel.Instance.LogStatus("AddNodeToGridCommand initialized.");
+                    Log.Info("AddNodeToGridCommand initialized.");
                 }
                 return _addNodeToGridCommand;
             }
@@ -102,12 +103,12 @@ namespace OR10N.ViewModel
         {
             get
             {
-                MainViewModel.Instance.LogStatus("Accessing SelectLocalizedStringCommand...");
+                Log.Info("Accessing SelectLocalizedStringCommand...");
                 if (_selectLocalizedStringCommand == null)
                 {
-                    MainViewModel.Instance.LogStatus("Initializing SelectLocalizedStringCommand...");
+                    Log.Info("Initializing SelectLocalizedStringCommand...");
                     _selectLocalizedStringCommand = new RelayCommand<LocalizationItem>(SelectLocalizedString);
-                    MainViewModel.Instance.LogStatus("SelectLocalizedStringCommand initialized.");
+                    Log.Info("SelectLocalizedStringCommand initialized.");
                 }
                 return _selectLocalizedStringCommand;
             }
@@ -118,12 +119,12 @@ namespace OR10N.ViewModel
         {
             get
             {
-                MainViewModel.Instance.LogStatus("Accessing SaveNodesCommand...");
+                Log.Info("Accessing SaveNodesCommand...");
                 if (_SaveNodesCommand == null)
                 {
-                    MainViewModel.Instance.LogStatus("Initializing SaveNodesCommand...");
+                    Log.Info("Initializing SaveNodesCommand...");
                     _SaveNodesCommand = new RelayCommand(SaveNodes);
-                    MainViewModel.Instance.LogStatus("SaveNodesCommand initialized.");
+                    Log.Info("SaveNodesCommand initialized.");
                 }
                 return _SaveNodesCommand;
             }
@@ -134,12 +135,12 @@ namespace OR10N.ViewModel
         {
             get
             {
-                MainViewModel.Instance.LogStatus("Accessing ClearNodesCommand...");
+                Log.Info("Accessing ClearNodesCommand...");
                 if (_ClearNodesCommand == null)
                 {
-                    MainViewModel.Instance.LogStatus("Initializing ClearNodesCommand...");
+                    Log.Info("Initializing ClearNodesCommand...");
                     _ClearNodesCommand = new RelayCommand(ClearNodes);
-                    MainViewModel.Instance.LogStatus("ClearNodesCommand initialized.");
+                    Log.Info("ClearNodesCommand initialized.");
                 }
                 return _ClearNodesCommand;
             }
@@ -150,12 +151,12 @@ namespace OR10N.ViewModel
         {
             get
             {
-                MainViewModel.Instance.LogStatus("Accessing LoadNodesCommand...");
+                Log.Info("Accessing LoadNodesCommand...");
                 if (_LoadNodesCommand == null)
                 {
-                    MainViewModel.Instance.LogStatus("Initializing LoadNodesCommand...");
+                    Log.Info("Initializing LoadNodesCommand...");
                     _LoadNodesCommand = new RelayCommand(LoadNodes);
-                    MainViewModel.Instance.LogStatus("LoadNodesCommand initialized.");
+                    Log.Info("LoadNodesCommand initialized.");
                 }
                 return _LoadNodesCommand;
             }
@@ -166,12 +167,12 @@ namespace OR10N.ViewModel
         {
             get
             {
-                MainViewModel.Instance.LogStatus("Accessing DeleteNodesCommand...");
+                Log.Info("Accessing DeleteNodesCommand...");
                 if (_deleteNodesCommand == null)
                 {
-                    MainViewModel.Instance.LogStatus("Initializing DeleteNodesCommand...");
+                    Log.Info("Initializing DeleteNodesCommand...");
                     _deleteNodesCommand = new RelayCommand<NodeViewModel>(DeleteSelectedNodes);
-                    MainViewModel.Instance.LogStatus("DeleteNodesCommand initialized.");
+                    Log.Info("DeleteNodesCommand initialized.");
                 }
                 return _deleteNodesCommand;
             }
@@ -185,12 +186,12 @@ namespace OR10N.ViewModel
         {
             get
             {
-                MainViewModel.Instance.LogStatus("Accessing IncreaseBezierStrengthCommand...");
+                Log.Info("Accessing IncreaseBezierStrengthCommand...");
                 if (increaseBezier == null)
                 {
-                    MainViewModel.Instance.LogStatus("Initializing IncreaseBezierStrengthCommand...");
+                    Log.Info("Initializing IncreaseBezierStrengthCommand...");
                     increaseBezier = new RelayCommand(IncreaseBezier);
-                    MainViewModel.Instance.LogStatus("IncreaseBezierStrengthCommand initialized.");
+                    Log.Info("IncreaseBezierStrengthCommand initialized.");
                 }
                 return increaseBezier;
             }
@@ -201,12 +202,12 @@ namespace OR10N.ViewModel
         {
             get
             {
-                MainViewModel.Instance.LogStatus("Accessing DecreaseBezierStrengthCommand...");
+                Log.Info("Accessing DecreaseBezierStrengthCommand...");
                 if (decreaseBezier == null)
                 {
-                    MainViewModel.Instance.LogStatus("Initializing DecreaseBezierStrengthCommand...");
+                    Log.Info("Initializing DecreaseBezierStrengthCommand...");
                     decreaseBezier = new RelayCommand(DecreaseBezier);
-                    MainViewModel.Instance.LogStatus("DecreaseBezierStrengthCommand initialized.");
+                    Log.Info("DecreaseBezierStrengthCommand initialized.");
                 }
                 return decreaseBezier;
             }
@@ -217,12 +218,12 @@ namespace OR10N.ViewModel
         {
             get
             {
-                MainViewModel.Instance.LogStatus("Accessing ResetBezierStrengthCommand...");
+                Log.Info("Accessing ResetBezierStrengthCommand...");
                 if (resetBezier == null)
                 {
-                    MainViewModel.Instance.LogStatus("Initializing ResetBezierStrengthCommand...");
+                    Log.Info("Initializing ResetBezierStrengthCommand...");
                     resetBezier = new RelayCommand(ResetBezier);
-                    MainViewModel.Instance.LogStatus("ResetBezierStrengthCommand initialized.");
+                    Log.Info("ResetBezierStrengthCommand initialized.");
                 }
                 return resetBezier;
             }
@@ -233,13 +234,13 @@ namespace OR10N.ViewModel
         {
             try
             {
-                MainViewModel.Instance.LogStatus($"Increasing BezierStrength. Current strength: {BezierStrength}");
+                Log.Info($"Increasing BezierStrength. Current strength: {BezierStrength}");
                 BezierStrength += 40;
-                MainViewModel.Instance.LogStatus($"BezierStrength increased to: {BezierStrength}");
+                Log.Info($"BezierStrength increased to: {BezierStrength}");
             }
             catch (Exception ex)
             {
-                MainViewModel.Instance.LogStatus($"Error while increasing BezierStrength: {ex.Message}");
+                Log.Info($"Error while increasing BezierStrength: {ex.Message}");
             }
         }
 
@@ -247,13 +248,13 @@ namespace OR10N.ViewModel
         {
             try
             {
-                MainViewModel.Instance.LogStatus($"Decreasing BezierStrength. Current strength: {BezierStrength}");
+                Log.Info($"Decreasing BezierStrength. Current strength: {BezierStrength}");
                 BezierStrength -= 40;
-                MainViewModel.Instance.LogStatus($"BezierStrength decreased to: {BezierStrength}");
+                Log.Info($"BezierStrength decreased to: {BezierStrength}");
             }
             catch (Exception ex)
             {
-                MainViewModel.Instance.LogStatus($"Error while decreasing BezierStrength: {ex.Message}");
+                Log.Info($"Error while decreasing BezierStrength: {ex.Message}");
             }
         }
 
@@ -261,13 +262,13 @@ namespace OR10N.ViewModel
         {
             try
             {
-                MainViewModel.Instance.LogStatus("Resetting BezierStrength to default value (80).");
+                Log.Info("Resetting BezierStrength to default value (80).");
                 BezierStrength = 80;
-                MainViewModel.Instance.LogStatus($"BezierStrength reset to: {BezierStrength}");
+                Log.Info($"BezierStrength reset to: {BezierStrength}");
             }
             catch (Exception ex)
             {
-                MainViewModel.Instance.LogStatus($"Error while resetting BezierStrength: {ex.Message}");
+                Log.Info($"Error while resetting BezierStrength: {ex.Message}");
             }
         }
 
@@ -275,59 +276,60 @@ namespace OR10N.ViewModel
         {
             try
             {
-                MainViewModel.Instance.LogStatus($"Attempting to connect pins. Source ID: {sourceID}, Destination ID: {destinationID}");
+                Log.Info($"Attempting to connect pins. Source ID: {sourceID}, Destination ID: {destinationID}");
 
                 Connector source = GetConnectorWithID(sourceID);
                 Connector destination = GetConnectorWithID(destinationID);
 
                 if (source == null)
                 {
-                    MainViewModel.Instance.LogStatus($"Source connector with ID {sourceID} not found.");
+                    Log.Info($"Source connector with ID {sourceID} not found.");
                     return;
                 }
 
                 if (destination == null)
                 {
-                    MainViewModel.Instance.LogStatus($"Destination connector with ID {destinationID} not found.");
+                    Log.Info($"Destination connector with ID {destinationID} not found.");
                     return;
                 }
 
-                MainViewModel.Instance.LogStatus($"Connecting source ID {sourceID} to destination ID {destinationID}.");
+                Log.Info($"Connecting source ID {sourceID} to destination ID {destinationID}.");
                 Connector.ConnectPins(source, destination);
-                MainViewModel.Instance.LogStatus($"Successfully connected source ID {sourceID} to destination ID {destinationID}.");
+                Log.Info($"Successfully connected source ID {sourceID} to destination ID {destinationID}.");
             }
             catch (Exception ex)
             {
-                MainViewModel.Instance.LogStatus($"Error while connecting pins from source ID {sourceID} to destination ID {destinationID}: {ex.Message}");
+                Log.Info($"Error while connecting pins from source ID {sourceID} to destination ID {destinationID}: {ex.Message}");
             }
         }
+        
 
         public void SelectLocalizedString(LocalizationItem s)
         {
             try
             {
-                MainViewModel.Instance.LogStatus($"Selecting localized string: {s.Key}");
+                Log.Info($"Selecting localized string: {s.Key}");
                 System.Windows.Controls.TextBox t = DynamicNode.GetCurrentEditTextBox();
 
                 if (t != null)
                 {
                     t.Text = s.Key;
-                    MainViewModel.Instance.LogStatus($"TextBox updated with key: {s.Key}");
+                    Log.Info($"TextBox updated with key: {s.Key}");
                 }
                 else
                 {
-                    MainViewModel.Instance.LogStatus("No active TextBox found. Cannot update with localized string.");
+                    Log.Info("No active TextBox found. Cannot update with localized string.");
                 }
             }
             catch (Exception ex)
             {
-                MainViewModel.Instance.LogStatus($"Error while selecting localized string '{s.Key}': {ex.Message}");
+                Log.Info($"Error while selecting localized string '{s.Key}': {ex.Message}");
             }
         }
 
         public string ExportNodesToLua()
         {
-            MainViewModel.Instance.LogStatus("Starting Lua export of nodes.");
+            Log.Info("Starting Lua export of nodes.");
             StringBuilder luaScript = new StringBuilder();
 
             try
@@ -337,22 +339,22 @@ namespace OR10N.ViewModel
                     if (node is DynamicNode)
                     {
                         DynamicNode funcNode = (DynamicNode)node;
-                        MainViewModel.Instance.LogStatus($"Exporting function: {funcNode.NodeName} to Lua.");
+                        Log.Info($"Exporting function: {funcNode.NodeName} to Lua.");
 
                         luaScript.AppendLine($"function {funcNode.NodeName}()");
                         luaScript.AppendLine(funcNode.NodeBody);
                         luaScript.AppendLine("end");
 
-                        MainViewModel.Instance.LogStatus($"Function {funcNode.NodeName} exported.");
+                        Log.Info($"Function {funcNode.NodeName} exported.");
                     }
                     // Add additional cases for conditionals and loops
                 }
 
-                MainViewModel.Instance.LogStatus("Lua export completed.");
+                Log.Info("Lua export completed.");
             }
             catch (Exception ex)
             {
-                MainViewModel.Instance.LogStatus($"Error during Lua export: {ex.Message}");
+                Log.Info($"Error during Lua export: {ex.Message}");
             }
 
             return luaScript.ToString();
@@ -360,7 +362,7 @@ namespace OR10N.ViewModel
 
         public string ExportNodesToPerl()
         {
-            MainViewModel.Instance.LogStatus("Starting Perl export of nodes.");
+            Log.Info("Starting Perl export of nodes.");
             StringBuilder perlScript = new StringBuilder();
 
             try
@@ -370,22 +372,22 @@ namespace OR10N.ViewModel
                     if (node is DynamicNode)
                     {
                         DynamicNode funcNode = (DynamicNode)node;
-                        MainViewModel.Instance.LogStatus($"Exporting function: {funcNode.NodeName} to Perl.");
+                        Log.Info($"Exporting function: {funcNode.NodeName} to Perl.");
 
                         perlScript.AppendLine($"sub {funcNode.NodeName} {{");
                         perlScript.AppendLine(funcNode.NodeBody);
                         perlScript.AppendLine("}");
 
-                        MainViewModel.Instance.LogStatus($"Function {funcNode.NodeName} exported.");
+                        Log.Info($"Function {funcNode.NodeName} exported.");
                     }
                     // Add additional cases for conditionals and loops
                 }
 
-                MainViewModel.Instance.LogStatus("Perl export completed.");
+                Log.Info("Perl export completed.");
             }
             catch (Exception ex)
             {
-                MainViewModel.Instance.LogStatus($"Error during Perl export: {ex.Message}");
+                Log.Info($"Error during Perl export: {ex.Message}");
             }
 
             return perlScript.ToString();
@@ -396,7 +398,7 @@ namespace OR10N.ViewModel
         // Modify the NetworkViewModel class to add nodes dynamically from parsed content.
         public void AddParsedNode(string nodeName, string nodeType, string body)
         {
-            MainViewModel.Instance.LogStatus($"Attempting to add a parsed node. Name: {nodeName}, Type: {nodeType}");
+            Log.Info($"Attempting to add a parsed node. Name: {nodeName}, Type: {nodeType}");
             NodeViewModel nodeToAdd = null;
 
             try
@@ -405,7 +407,7 @@ namespace OR10N.ViewModel
                 switch (nodeType)
                 {
                     case "Function":
-                        MainViewModel.Instance.LogStatus($"Creating Function node: {nodeName}");
+                        Log.Info($"Creating Function node: {nodeName}");
                         DynamicNode functionNode = new DynamicNode(mainViewModel);
                         functionNode.NodeName = nodeName;
                         functionNode.SetBody(body);
@@ -414,45 +416,45 @@ namespace OR10N.ViewModel
 
                     case "If":
                     case "Conditional":
-                        MainViewModel.Instance.LogStatus($"Creating Conditional node for: {nodeName}");
+                        Log.Info($"Creating Conditional node for: {nodeName}");
                         DynamicNode conditionalNode = new DynamicNode(mainViewModel);
                         conditionalNode.NodeName = "If statement";
                         nodeToAdd = conditionalNode;
                         break;
 
                     case "Loop":
-                        MainViewModel.Instance.LogStatus($"Creating Loop node: {nodeName}");
+                        Log.Info($"Creating Loop node: {nodeName}");
                         DynamicNode loopNode = new DynamicNode(mainViewModel);
                         loopNode.NodeName = "Loop: " + nodeName;
                         nodeToAdd = loopNode;
                         break;
 
                     default:
-                        MainViewModel.Instance.LogStatus($"Unknown node type: {nodeType}. Node not created.");
+                        Log.Info($"Unknown node type: {nodeType}. Node not created.");
                         break;
                 }
 
                 if (nodeToAdd != null)
                 {
-                    MainViewModel.Instance.LogStatus($"Node created. Preparing to position and add to the grid.");
+                    Log.Info($"Node created. Preparing to position and add to the grid.");
 
                     // Randomly position the new node on the grid
                     Point p = GetRandomPosition();
                     nodeToAdd.Margin = new Thickness(p.X, p.Y, 0, 0);
-                    MainViewModel.Instance.LogStatus($"Node positioned at X: {p.X}, Y: {p.Y}");
+                    Log.Info($"Node positioned at X: {p.X}, Y: {p.Y}");
 
                     // Add the node to the grid
                     Nodes.Add(nodeToAdd);
-                    MainViewModel.Instance.LogStatus($"Node '{nodeToAdd.NodeName}' of type '{nodeType}' added to the grid.");
+                    Log.Info($"Node '{nodeToAdd.NodeName}' of type '{nodeType}' added to the grid.");
                 }
                 else
                 {
-                    MainViewModel.Instance.LogStatus($"Failed to add node: {nodeName}. Node was null.");
+                    Log.Info($"Failed to add node: {nodeName}. Node was null.");
                 }
             }
             catch (Exception ex)
             {
-                MainViewModel.Instance.LogStatus($"Error while adding parsed node '{nodeName}': {ex.Message}");
+                Log.Info($"Error while adding parsed node '{nodeName}': {ex.Message}");
             }
         }
 
@@ -460,25 +462,25 @@ namespace OR10N.ViewModel
         // Utility function to determine random node placement
         private Point GetRandomPosition()
         {
-            MainViewModel.Instance.LogStatus("Calculating random position for new node...");
+            Log.Info("Calculating random position for new node...");
             try
             {
                 MainWindow main = Application.Current.MainWindow as MainWindow;
                 if (main == null)
                 {
-                    MainViewModel.Instance.LogStatus("Main window reference is null. Cannot determine random position.");
+                    Log.Info("Main window reference is null. Cannot determine random position.");
                     return new Point(0, 0); // Return a default point if main window is null
                 }
 
                 Random r = new Random();
                 int increment = r.Next(-400, 400);
                 Point randomPoint = new Point(main.Width / 2 + increment, main.Height / 2 + increment);
-                MainViewModel.Instance.LogStatus($"Random position calculated: X: {randomPoint.X}, Y: {randomPoint.Y}");
+                Log.Info($"Random position calculated: X: {randomPoint.X}, Y: {randomPoint.Y}");
                 return randomPoint;
             }
             catch (Exception ex)
             {
-                MainViewModel.Instance.LogStatus($"Error while calculating random position: {ex.Message}");
+                Log.Info($"Error while calculating random position: {ex.Message}");
                 return new Point(0, 0); // Return a default point in case of error
             }
         }
@@ -486,12 +488,12 @@ namespace OR10N.ViewModel
 
         private void AddNode_Click(object sender, RoutedEventArgs e)
         {
-            MainViewModel.Instance.LogStatus("AddNode_Click triggered.");
+            Log.Info("AddNode_Click triggered.");
             try
             {
                 // Fetch the NetworkViewModel from the DataContext
                 NetworkViewModel network = SimpleIoc.Default.GetInstance<NetworkViewModel>();
-                MainViewModel.Instance.LogStatus("Fetched NetworkViewModel instance.");
+                Log.Info("Fetched NetworkViewModel instance.");
 
                 // Create a new NodeWrapper (You can customize this based on your needs)
                 NodeWrapper newNode = new NodeWrapper
@@ -502,34 +504,34 @@ namespace OR10N.ViewModel
                     BaseAssemblyType = "System.String",
                     CallingClass = "MyClass"
                 };
-                MainViewModel.Instance.LogStatus($"Created new NodeWrapper with name: {newNode.NodeName}");
+                Log.Info($"Created new NodeWrapper with name: {newNode.NodeName}");
 
                 // Use the existing AddNodeToGrid method to add the node to the grid
                 network.AddNodeToGrid(newNode);
-                MainViewModel.Instance.LogStatus($"Node '{newNode.NodeName}' added to the grid.");
+                Log.Info($"Node '{newNode.NodeName}' added to the grid.");
 
                 // Optionally, show a confirmation message
                 MessageBox.Show("Node added to the grid!");
             }
             catch (Exception ex)
             {
-                MainViewModel.Instance.LogStatus($"Error in AddNode_Click: {ex.Message}");
+                Log.Info($"Error in AddNode_Click: {ex.Message}");
             }
         }
 
 
         private void DeleteNode_Click(object sender, RoutedEventArgs e)
         {
-            MainViewModel.Instance.LogStatus("DeleteNode_Click triggered.");
+            Log.Info("DeleteNode_Click triggered.");
             try
             {
                 // Fetch the NetworkViewModel from the IoC container or DataContext
                 NetworkViewModel network = SimpleIoc.Default.GetInstance<NetworkViewModel>();
-                MainViewModel.Instance.LogStatus("Fetched NetworkViewModel instance.");
+                Log.Info("Fetched NetworkViewModel instance.");
 
                 // Find the node that is selected (where IsSelected == true)
                 var selectedNode = network.Nodes.FirstOrDefault(node => node.IsSelected);
-                MainViewModel.Instance.LogStatus(selectedNode != null
+                Log.Info(selectedNode != null
                     ? $"Selected node for deletion: {selectedNode.NodeName}"
                     : "No node selected for deletion.");
 
@@ -538,7 +540,7 @@ namespace OR10N.ViewModel
                 {
                     // Call the method to remove the selected node
                     network.RemoveNode(selectedNode);
-                    MainViewModel.Instance.LogStatus($"Node '{selectedNode.NodeName}' removed from the grid.");
+                    Log.Info($"Node '{selectedNode.NodeName}' removed from the grid.");
 
                     // Provide user feedback
                     MessageBox.Show($"Node '{selectedNode.NodeName}' deleted!");
@@ -551,7 +553,7 @@ namespace OR10N.ViewModel
             }
             catch (Exception ex)
             {
-                MainViewModel.Instance.LogStatus($"Error in DeleteNode_Click: {ex.Message}");
+                Log.Info($"Error in DeleteNode_Click: {ex.Message}");
             }
         }
 
@@ -567,11 +569,11 @@ namespace OR10N.ViewModel
             if (nodeToAdd != null)
             {
                 this.Nodes.Add(nodeToAdd);
-                MainViewModel.Instance.LogStatus("Added node " + nodeToAdd.NodeName + " to grid");
+                Log.Info("Added node " + nodeToAdd.NodeName + " to grid");
             }
             else
             {
-                MainViewModel.Instance.LogStatus("Couldn't add node " + node.NodeName + " to grid");
+                Log.Info("Couldn't add node " + node.NodeName + " to grid");
             }
 
             //Close the node view window
@@ -581,7 +583,7 @@ namespace OR10N.ViewModel
 
         public Connector GetConnectorWithID(int id)
         {
-            MainViewModel.Instance.LogStatus($"Attempting to find connector with ID: {id}");
+            Log.Info($"Attempting to find connector with ID: {id}");
             Connector connector = null;
 
             try
@@ -589,31 +591,31 @@ namespace OR10N.ViewModel
                 // Check if MainWindow is null.
                 if (MainWindow == null)
                 {
-                    MainViewModel.Instance.LogStatus("MainWindow is null. Cannot search for connectors.");
+                    Log.Info("MainWindow is null. Cannot search for connectors.");
                     return null;
                 }
 
-                MainViewModel.Instance.LogStatus("Fetching all connectors from the MainWindow...");
+                Log.Info("Fetching all connectors from the MainWindow...");
                 var connectors = FindVisualChildren<Connector>(MainWindow);
 
-                MainViewModel.Instance.LogStatus($"Total connectors found: {connectors.Count()}");
+                Log.Info($"Total connectors found: {connectors.Count()}");
 
                 // Iterate through each connector and find the one matching the given ID.
                 foreach (Connector cp in connectors)
                 {
-                    MainViewModel.Instance.LogStatus($"Checking connector with ID: {cp.ID}");
+                    Log.Info($"Checking connector with ID: {cp.ID}");
                     if (cp.ID == id)
                     {
-                        MainViewModel.Instance.LogStatus($"Connector with ID: {id} found.");
+                        Log.Info($"Connector with ID: {id} found.");
                         return cp;
                     }
                 }
 
-                MainViewModel.Instance.LogStatus($"Connector with ID: {id} not found.");
+                Log.Info($"Connector with ID: {id} not found.");
             }
             catch (Exception ex)
             {
-                MainViewModel.Instance.LogStatus($"Error while finding connector with ID {id}: {ex.Message}");
+                Log.Info($"Error while finding connector with ID {id}: {ex.Message}");
             }
 
             return connector;
@@ -623,12 +625,12 @@ namespace OR10N.ViewModel
         public void ClearNodes()
         {
             this.Nodes.Clear();
-            MainViewModel.Instance.LogStatus("Cleared nodes.");
+            Log.Info("Cleared nodes.");
         }
 
         public void SaveNodes()
         {
-            MainViewModel.Instance.LogStatus("Starting SaveNodes method...");
+            Log.Info("Starting SaveNodes method...");
 
             try
             {
@@ -639,23 +641,23 @@ namespace OR10N.ViewModel
                     FilterIndex = 1
                 };
 
-                MainViewModel.Instance.LogStatus("Configured SaveFileDialog with filter options.");
+                Log.Info("Configured SaveFileDialog with filter options.");
 
                 // Call the ShowDialog method to show the dialog box.
                 bool? userClickedOK = saveFileDialog1.ShowDialog();
-                MainViewModel.Instance.LogStatus($"Save dialog result: {userClickedOK}");
+                Log.Info($"Save dialog result: {userClickedOK}");
 
                 // Process input if the user clicked OK.
                 if (userClickedOK == true)
                 {
                     string path = saveFileDialog1.FileName;
-                    MainViewModel.Instance.LogStatus($"User selected path: {path}");
+                    Log.Info($"User selected path: {path}");
 
                     using (Stream myStream = saveFileDialog1.OpenFile())
                     {
                         if (myStream != null)
                         {
-                            MainViewModel.Instance.LogStatus("Stream opened successfully. Preparing to save nodes...");
+                            Log.Info("Stream opened successfully. Preparing to save nodes...");
 
                             #region Nodes
                             XmlWriterSettings xmlWriterSettings = new XmlWriterSettings
@@ -664,7 +666,7 @@ namespace OR10N.ViewModel
                                 IndentChars = "\t",
                                 NewLineOnAttributes = true
                             };
-                            MainViewModel.Instance.LogStatus("Configured XmlWriterSettings for serialization.");
+                            Log.Info("Configured XmlWriterSettings for serialization.");
 
                             List<SerializeableNodeViewModel> SerializeNodes = new List<SerializeableNodeViewModel>();
                             XmlSerializer serializer = new XmlSerializer(
@@ -678,13 +680,13 @@ namespace OR10N.ViewModel
                                 });
                             TextWriter writer = new StreamWriter(myStream);
 
-                            MainViewModel.Instance.LogStatus("Serializing nodes...");
+                            Log.Info("Serializing nodes...");
 
                             foreach (var node in Nodes)
                             {
                                 if (node is RootNode rootNode)
                                 {
-                                    MainViewModel.Instance.LogStatus($"Processing RootNode: {rootNode.NodeName}");
+                                    Log.Info($"Processing RootNode: {rootNode.NodeName}");
 
                                     SerializeableRootNode rootSerial = new SerializeableRootNode
                                     {
@@ -698,11 +700,11 @@ namespace OR10N.ViewModel
                                     };
                                     SerializeNodes.Add(rootSerial);
 
-                                    MainViewModel.Instance.LogStatus($"Serialized RootNode: {rootNode.NodeName}");
+                                    Log.Info($"Serialized RootNode: {rootNode.NodeName}");
                                 }
                                 else if (node is ConditionNode conNode)
                                 {
-                                    MainViewModel.Instance.LogStatus($"Processing ConditionNode: {conNode.NodeName}");
+                                    Log.Info($"Processing ConditionNode: {conNode.NodeName}");
 
                                     SerializeableConditionNode conSerial = new SerializeableConditionNode
                                     {
@@ -720,11 +722,11 @@ namespace OR10N.ViewModel
                                     };
                                     SerializeNodes.Add(conSerial);
 
-                                    MainViewModel.Instance.LogStatus($"Serialized ConditionNode: {conNode.NodeName}");
+                                    Log.Info($"Serialized ConditionNode: {conNode.NodeName}");
                                 }
                                 else if (node is VariableNode varNode)
                                 {
-                                    MainViewModel.Instance.LogStatus($"Processing VariableNode: {varNode.NodeName}");
+                                    Log.Info($"Processing VariableNode: {varNode.NodeName}");
 
                                     SerializeableVariableNode varSerial = new SerializeableVariableNode
                                     {
@@ -740,11 +742,11 @@ namespace OR10N.ViewModel
                                     };
                                     SerializeNodes.Add(varSerial);
 
-                                    MainViewModel.Instance.LogStatus($"Serialized VariableNode: {varNode.NodeName}");
+                                    Log.Info($"Serialized VariableNode: {varNode.NodeName}");
                                 }
                                 else if (node is DynamicNode dynNode)
                                 {
-                                    MainViewModel.Instance.LogStatus($"Processing DynamicNode: {dynNode.NodeName}");
+                                    Log.Info($"Processing DynamicNode: {dynNode.NodeName}");
 
                                     SerializeableDynamicNode dynSerial = new SerializeableDynamicNode
                                     {
@@ -763,41 +765,41 @@ namespace OR10N.ViewModel
                                     foreach (var arg in dynNode.ArgumentCache)
                                     {
                                         dynSerial.Arguments.Add(arg);
-                                        MainViewModel.Instance.LogStatus($"Added argument: {arg.Name} to DynamicNode: {dynNode.NodeName}");
+                                        Log.Info($"Added argument: {arg.Name} to DynamicNode: {dynNode.NodeName}");
                                     }
 
                                     SerializeNodes.Add(dynSerial);
-                                    MainViewModel.Instance.LogStatus($"Serialized DynamicNode: {dynNode.NodeName}");
+                                    Log.Info($"Serialized DynamicNode: {dynNode.NodeName}");
                                 }
                             }
 
                             serializer.Serialize(writer, SerializeNodes);
-                            MainViewModel.Instance.LogStatus($"Nodes successfully serialized to path: {path}");
+                            Log.Info($"Nodes successfully serialized to path: {path}");
 
                             writer.Close();
-                            MainViewModel.Instance.LogStatus("TextWriter closed after serialization.");
+                            Log.Info("TextWriter closed after serialization.");
 
                             myStream.Close();
-                            MainViewModel.Instance.LogStatus("Stream closed successfully.");
+                            Log.Info("Stream closed successfully.");
 
                             System.Windows.Clipboard.SetText(path);
-                            MainViewModel.Instance.LogStatus($"Save completed. Path: {path} copied to clipboard", true);
+                            Log.Info("Save completed. Path: {0} copied to clipboard. Success: {1}", path, true);
                             #endregion
                         }
                         else
                         {
-                            MainViewModel.Instance.LogStatus("Stream was null. Nodes were not saved.");
+                            Log.Info("Stream was null. Nodes were not saved.");
                         }
                     }
                 }
                 else
                 {
-                    MainViewModel.Instance.LogStatus("User canceled the save dialog.");
+                    Log.Info("User canceled the save dialog.");
                 }
             }
             catch (Exception ex)
             {
-                MainViewModel.Instance.LogStatus($"Error during SaveNodes: {ex.Message}");
+                Log.Info($"Error during SaveNodes: {ex.Message}");
             }
         }
 
@@ -805,13 +807,13 @@ namespace OR10N.ViewModel
 
         public void LoadNodes()
         {
-            MainViewModel.Instance.LogStatus("Starting LoadNodes...");
+            Log.Info("Starting LoadNodes...");
             try
             {
                 // Clear any existing nodes before loading new ones.
-                MainViewModel.Instance.LogStatus("Clearing existing nodes...");
+                Log.Info("Clearing existing nodes...");
                 ClearNodes();
-                MainViewModel.Instance.LogStatus("Existing nodes cleared.");
+                Log.Info("Existing nodes cleared.");
 
                 OpenFileDialog openFileDialog1 = new OpenFileDialog
                 {
@@ -820,14 +822,14 @@ namespace OR10N.ViewModel
                     Multiselect = false
                 };
 
-                MainViewModel.Instance.LogStatus("Opening file dialog for node XML selection...");
+                Log.Info("Opening file dialog for node XML selection...");
                 bool? userClickedOK = openFileDialog1.ShowDialog();
-                MainViewModel.Instance.LogStatus($"File dialog result: {userClickedOK}");
+                Log.Info($"File dialog result: {userClickedOK}");
 
                 if (userClickedOK == true)
                 {
                     string path = openFileDialog1.FileName;
-                    MainViewModel.Instance.LogStatus($"Selected file path: {path}");
+                    Log.Info($"Selected file path: {path}");
 
                     List<SerializeableNodeViewModel> SerializeNodes;
                     XmlSerializer ser = new XmlSerializer(typeof(List<SerializeableNodeViewModel>),
@@ -835,9 +837,9 @@ namespace OR10N.ViewModel
 
                     using (XmlReader reader = XmlReader.Create(path))
                     {
-                        MainViewModel.Instance.LogStatus("Deserializing nodes from XML...");
+                        Log.Info("Deserializing nodes from XML...");
                         SerializeNodes = (List<SerializeableNodeViewModel>)ser.Deserialize(reader);
-                        MainViewModel.Instance.LogStatus($"Deserialization complete. {SerializeNodes.Count} nodes found.");
+                        Log.Info($"Deserialization complete. {SerializeNodes.Count} nodes found.");
                     }
 
                     // Add the deserialized nodes to the collection.
@@ -847,58 +849,58 @@ namespace OR10N.ViewModel
                         {
                             if (serializeableNodeViewModel is SerializeableRootNode rootSerialized)
                             {
-                                MainViewModel.Instance.LogStatus($"Processing SerializeableRootNode: {rootSerialized.NodeName}");
+                                Log.Info($"Processing SerializeableRootNode: {rootSerialized.NodeName}");
                                 RootNode newNode = new RootNode(MainViewModel.Instance);
                                 newNode.Populate(rootSerialized);
                                 Nodes.Add(newNode);
-                                MainViewModel.Instance.LogStatus($"Added RootNode: {newNode.NodeName}");
+                                Log.Info($"Added RootNode: {newNode.NodeName}");
                             }
                             else if (serializeableNodeViewModel is SerializeableVariableNode variableSerialized)
                             {
-                                MainViewModel.Instance.LogStatus($"Processing SerializeableVariableNode: {variableSerialized.NodeName}");
+                                Log.Info($"Processing SerializeableVariableNode: {variableSerialized.NodeName}");
                                 VariableNode newNode = new VariableNode(MainViewModel.Instance);
                                 newNode.Populate(variableSerialized);
                                 Nodes.Add(newNode);
-                                MainViewModel.Instance.LogStatus($"Added VariableNode: {newNode.NodeName}");
+                                Log.Info($"Added VariableNode: {newNode.NodeName}");
                             }
                             else if (serializeableNodeViewModel is SerializeableDynamicNode dynamicSerialized)
                             {
-                                MainViewModel.Instance.LogStatus($"Processing SerializeableDynamicNode: {dynamicSerialized.NodeName}");
+                                Log.Info($"Processing SerializeableDynamicNode: {dynamicSerialized.NodeName}");
                                 DynamicNode newNode = new DynamicNode(MainViewModel.Instance);
                                 newNode.Populate(dynamicSerialized);
                                 Nodes.Add(newNode);
-                                MainViewModel.Instance.LogStatus($"Added DynamicNode: {newNode.NodeName}");
+                                Log.Info($"Added DynamicNode: {newNode.NodeName}");
                             }
                             else if (serializeableNodeViewModel is SerializeableConditionNode conSerialized)
                             {
-                                MainViewModel.Instance.LogStatus($"Processing SerializeableConditionNode: {conSerialized.NodeName}");
+                                Log.Info($"Processing SerializeableConditionNode: {conSerialized.NodeName}");
                                 ConditionNode newNode = new ConditionNode(MainViewModel.Instance);
                                 newNode.Populate(conSerialized);
                                 Nodes.Add(newNode);
-                                MainViewModel.Instance.LogStatus($"Added ConditionNode: {newNode.NodeName}");
+                                Log.Info($"Added ConditionNode: {newNode.NodeName}");
                             }
                         }
                         catch (Exception ex)
                         {
-                            MainViewModel.Instance.LogStatus($"Error while processing node: {ex.Message}");
+                            Log.Info($"Error while processing node: {ex.Message}");
                         }
                     }
 
                     // Connect nodes as per the saved configuration.
-                    MainViewModel.Instance.LogStatus("Connecting nodes...");
+                    Log.Info("Connecting nodes...");
                     ConnectNodes();
-                    MainViewModel.Instance.LogStatus("Nodes connected successfully.");
+                    Log.Info("Nodes connected successfully.");
                 }
                 else
                 {
-                    MainViewModel.Instance.LogStatus("User canceled the file dialog. No nodes loaded.");
+                    Log.Info("User canceled the file dialog. No nodes loaded.");
                 }
             }
             catch (Exception ex)
             {
-                MainViewModel.Instance.LogStatus($"Error in LoadNodes: {ex.Message}");
+                Log.Info($"Error in LoadNodes: {ex.Message}");
             }
-            MainViewModel.Instance.LogStatus("LoadNodes process completed.");
+            Log.Info("LoadNodes process completed.");
         }
 
         private void ConnectNodes()
@@ -909,54 +911,54 @@ namespace OR10N.ViewModel
                 {
                     if (node is RootNode rootNode)
                     {
-                        MainViewModel.Instance.LogStatus($"Connecting output for RootNode: {rootNode.NodeName}");
+                        Log.Info($"Connecting output for RootNode: {rootNode.NodeName}");
                         if (rootNode.OutputConnector.ConnectionNodeID <= 0)
                         {
-                            MainViewModel.Instance.LogStatus("Output connection ID is not valid, skipping connection.");
+                            Log.Info("Output connection ID is not valid, skipping connection.");
                             continue;
                         }
 
                         Connector connectedTo = GetInConnectorBasedOnNode(rootNode.OutputConnector.ConnectionNodeID);
                         Connector.ConnectPins(rootNode.OutputConnector, connectedTo);
-                        MainViewModel.Instance.LogStatus($"Output connected for RootNode: {rootNode.NodeName}");
+                        Log.Info($"Output connected for RootNode: {rootNode.NodeName}");
                     }
 
                     if (node is ConditionNode conNode)
                     {
-                        MainViewModel.Instance.LogStatus($"Connecting ConditionNode: {conNode.NodeName}");
+                        Log.Info($"Connecting ConditionNode: {conNode.NodeName}");
 
                         if (conNode.boolInput.ConnectionNodeID > 0)
                         {
                             Connector connectedToVar = GetOutConnectorBasedOnNode(conNode.boolInput.ConnectionNodeID);
                             Connector.ConnectPins(conNode.boolInput, connectedToVar);
-                            MainViewModel.Instance.LogStatus($"Bool input connected for ConditionNode: {conNode.NodeName}");
+                            Log.Info($"Bool input connected for ConditionNode: {conNode.NodeName}");
                         }
 
                         if (conNode.InExecutionConnector.ConnectionNodeID > 0)
                         {
                             Connector connectedTo = GetOutConnectorBasedOnNode(conNode.InExecutionConnector.ConnectionNodeID);
                             Connector.ConnectPins(conNode.InExecutionConnector, connectedTo);
-                            MainViewModel.Instance.LogStatus($"Input connected for ConditionNode: {conNode.NodeName}");
+                            Log.Info($"Input connected for ConditionNode: {conNode.NodeName}");
                         }
 
                         if (conNode.OutExecutionConnectorTrue.ConnectionNodeID > 0)
                         {
                             Connector connectedTo = GetInConnectorBasedOnNode(conNode.OutExecutionConnectorTrue.ConnectionNodeID);
                             Connector.ConnectPins(conNode.OutExecutionConnectorTrue, connectedTo);
-                            MainViewModel.Instance.LogStatus($"Output (True) connected for ConditionNode: {conNode.NodeName}");
+                            Log.Info($"Output (True) connected for ConditionNode: {conNode.NodeName}");
                         }
 
                         if (conNode.OutExecutionConnectorFalse.ConnectionNodeID > 0)
                         {
                             Connector connectedTo = GetInConnectorBasedOnNode(conNode.OutExecutionConnectorFalse.ConnectionNodeID);
                             Connector.ConnectPins(conNode.OutExecutionConnectorFalse, connectedTo);
-                            MainViewModel.Instance.LogStatus($"Output (False) connected for ConditionNode: {conNode.NodeName}");
+                            Log.Info($"Output (False) connected for ConditionNode: {conNode.NodeName}");
                         }
                     }
 
                     if (node is DynamicNode dynNode)
                     {
-                        MainViewModel.Instance.LogStatus($"Connecting DynamicNode: {dynNode.NodeName}");
+                        Log.Info($"Connecting DynamicNode: {dynNode.NodeName}");
 
                         for (int i = 0; i < dynNode.ArgumentCache.Count(); i++)
                         {
@@ -968,7 +970,7 @@ namespace OR10N.ViewModel
                                 int connectedToVar = arg.ArgumentConnectedToNodeID;
                                 Connector varConnect = GetOutConnectorBasedOnNode(connectedToVar);
                                 Connector.ConnectPins(conID, varConnect);
-                                MainViewModel.Instance.LogStatus($"Argument connected for DynamicNode: {dynNode.NodeName}, Argument: {arg.Name}");
+                                Log.Info($"Argument connected for DynamicNode: {dynNode.NodeName}, Argument: {arg.Name}");
                             }
                         }
 
@@ -976,14 +978,14 @@ namespace OR10N.ViewModel
                         {
                             Connector connectedTo = GetInConnectorBasedOnNode(dynNode.OutExecutionConnector.ConnectionNodeID);
                             Connector.ConnectPins(dynNode.OutExecutionConnector, connectedTo);
-                            MainViewModel.Instance.LogStatus($"Output connected for DynamicNode: {dynNode.NodeName}");
+                            Log.Info($"Output connected for DynamicNode: {dynNode.NodeName}");
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                MainViewModel.Instance.LogStatus($"Error while connecting nodes: {ex.Message}");
+                Log.Info($"Error while connecting nodes: {ex.Message}");
             }
         }
 
@@ -992,22 +994,22 @@ namespace OR10N.ViewModel
         // Method to parse Lua script and create nodes dynamically
         public void ImportLuaFile(string filePath)
         {
-            MainViewModel.Instance.LogStatus($"Starting ImportLuaFile with filePath: {filePath}");
+            Log.Info($"Starting ImportLuaFile with filePath: {filePath}");
             try
             {
                 // Read the Lua script from the specified file path
                 string luaScript = File.ReadAllText(filePath);
-                MainViewModel.Instance.LogStatus("Lua script read successfully.");
+                Log.Info("Lua script read successfully.");
 
                 var lua = new Script();
-                MainViewModel.Instance.LogStatus("Lua script environment initialized.");
+                Log.Info("Lua script environment initialized.");
 
                 // Load the script into the Lua environment (this will not execute the script)
                 lua.LoadString(luaScript);
-                MainViewModel.Instance.LogStatus("Lua script loaded into environment.");
+                Log.Info("Lua script loaded into environment.");
 
                 // Parse functions
-                MainViewModel.Instance.LogStatus("Parsing functions from Lua script...");
+                Log.Info("Parsing functions from Lua script...");
                 foreach (var global in lua.Globals.Keys)
                 {
                     DynValue globalValue = lua.Globals.Get(global);
@@ -1015,97 +1017,97 @@ namespace OR10N.ViewModel
                     {
                         string functionName = global.ToString();
                         string functionBody = GetLuaFunctionBody(luaScript, functionName);
-                        MainViewModel.Instance.LogStatus($"Found function: {functionName}, adding as node.");
+                        Log.Info($"Found function: {functionName}, adding as node.");
                         AddParsedNode(functionName, "Function", functionBody);
-                        MainViewModel.Instance.LogStatus($"Function '{functionName}' added as node.");
+                        Log.Info($"Function '{functionName}' added as node.");
                     }
                 }
-                MainViewModel.Instance.LogStatus("Function parsing completed.");
+                Log.Info("Function parsing completed.");
 
                 // Parse conditionals
-                MainViewModel.Instance.LogStatus("Parsing conditionals...");
+                Log.Info("Parsing conditionals...");
                 ParseConditionals(luaScript);
-                MainViewModel.Instance.LogStatus("Conditionals parsing completed.");
+                Log.Info("Conditionals parsing completed.");
 
                 // Parse loops
-                MainViewModel.Instance.LogStatus("Parsing loops...");
+                Log.Info("Parsing loops...");
                 ParseLoops(luaScript);
-                MainViewModel.Instance.LogStatus("Loop parsing completed.");
+                Log.Info("Loop parsing completed.");
             }
             catch (Exception ex)
             {
-                MainViewModel.Instance.LogStatus($"Error in ImportLuaFile: {ex.Message}");
+                Log.Info($"Error in ImportLuaFile: {ex.Message}");
             }
         }
 
         // Method to parse conditionals like "if" and "else"
         private void ParseConditionals(string luaScript)
         {
-            MainViewModel.Instance.LogStatus("Starting ParseConditionals...");
+            Log.Info("Starting ParseConditionals...");
             try
             {
                 string ifPattern = @"if\s+\(.*?\)\s+then(.*?)end";
                 var matches = Regex.Matches(luaScript, ifPattern, RegexOptions.Singleline);
-                MainViewModel.Instance.LogStatus($"Found {matches.Count} 'if' conditionals in the Lua script.");
+                Log.Info($"Found {matches.Count} 'if' conditionals in the Lua script.");
 
                 foreach (Match match in matches)
                 {
                     string conditionBody = match.Groups[1].Value;
-                    MainViewModel.Instance.LogStatus("Adding 'If' conditional as node...");
+                    Log.Info("Adding 'If' conditional as node...");
                     AddParsedNode("Conditional", "If", conditionBody);
-                    MainViewModel.Instance.LogStatus("'If' conditional node added.");
+                    Log.Info("'If' conditional node added.");
                 }
             }
             catch (Exception ex)
             {
-                MainViewModel.Instance.LogStatus($"Error while parsing conditionals: {ex.Message}");
+                Log.Info($"Error while parsing conditionals: {ex.Message}");
             }
-            MainViewModel.Instance.LogStatus("ParseConditionals completed.");
+            Log.Info("ParseConditionals completed.");
         }
 
         // Method to parse loops like "for" and "while"
         private void ParseLoops(string luaScript)
         {
-            MainViewModel.Instance.LogStatus("Starting ParseLoops...");
+            Log.Info("Starting ParseLoops...");
             try
             {
                 // For-loop pattern
                 string forPattern = @"for\s+.*?\s+in\s+.*?\s+do(.*?)end";
                 var forMatches = Regex.Matches(luaScript, forPattern, RegexOptions.Singleline);
-                MainViewModel.Instance.LogStatus($"Found {forMatches.Count} 'for' loops in the Lua script.");
+                Log.Info($"Found {forMatches.Count} 'for' loops in the Lua script.");
 
                 foreach (Match match in forMatches)
                 {
                     string loopBody = match.Groups[1].Value;
-                    MainViewModel.Instance.LogStatus("Adding 'For' loop as node...");
+                    Log.Info("Adding 'For' loop as node...");
                     AddParsedNode("Loop", "For", loopBody);
-                    MainViewModel.Instance.LogStatus("'For' loop node added.");
+                    Log.Info("'For' loop node added.");
                 }
 
                 // While-loop pattern
                 string whilePattern = @"while\s+.*?\s+do(.*?)end";
                 var whileMatches = Regex.Matches(luaScript, whilePattern, RegexOptions.Singleline);
-                MainViewModel.Instance.LogStatus($"Found {whileMatches.Count} 'while' loops in the Lua script.");
+                Log.Info($"Found {whileMatches.Count} 'while' loops in the Lua script.");
 
                 foreach (Match match in whileMatches)
                 {
                     string loopBody = match.Groups[1].Value;
-                    MainViewModel.Instance.LogStatus("Adding 'While' loop as node...");
+                    Log.Info("Adding 'While' loop as node...");
                     AddParsedNode("Loop", "While", loopBody);
-                    MainViewModel.Instance.LogStatus("'While' loop node added.");
+                    Log.Info("'While' loop node added.");
                 }
             }
             catch (Exception ex)
             {
-                MainViewModel.Instance.LogStatus($"Error while parsing loops: {ex.Message}");
+                Log.Info($"Error while parsing loops: {ex.Message}");
             }
-            MainViewModel.Instance.LogStatus("ParseLoops completed.");
+            Log.Info("ParseLoops completed.");
         }
 
         // Helper function to extract function body from Lua script by name
         private string GetLuaFunctionBody(string luaScript, string functionName)
         {
-            MainViewModel.Instance.LogStatus($"Extracting body for function: {functionName}");
+            Log.Info($"Extracting body for function: {functionName}");
             try
             {
                 // Simple method to find and extract the function body for demonstration purposes
@@ -1114,18 +1116,18 @@ namespace OR10N.ViewModel
 
                 if (match.Success)
                 {
-                    MainViewModel.Instance.LogStatus($"Body extracted for function: {functionName}");
+                    Log.Info($"Body extracted for function: {functionName}");
                     return match.Groups[1].Value;
                 }
                 else
                 {
-                    MainViewModel.Instance.LogStatus($"No body found for function: {functionName}");
+                    Log.Info($"No body found for function: {functionName}");
                     return string.Empty;
                 }
             }
             catch (Exception ex)
             {
-                MainViewModel.Instance.LogStatus($"Error extracting function body for {functionName}: {ex.Message}");
+                Log.Info($"Error extracting function body for {functionName}: {ex.Message}");
                 return string.Empty;
             }
         }
@@ -1133,15 +1135,15 @@ namespace OR10N.ViewModel
 
         public void ImportPerlFile(string filePath)
         {
-            MainViewModel.Instance.LogStatus($"Starting ImportPerlFile with filePath: {filePath}");
+            Log.Info($"Starting ImportPerlFile with filePath: {filePath}");
             try
             {
                 // Define Perl script path and arguments
                 string perlExecutable = @"C:\Strawberry\perl\bin\perl.exe";  // Path to your Perl executable
                 string scriptPath = @"C:\Users\corys\Source\Repos\OR10N\FlowParser\parse_perl_script.pl";  // A Perl script that uses PPI to parse another Perl file
 
-                MainViewModel.Instance.LogStatus($"Perl executable: {perlExecutable}");
-                MainViewModel.Instance.LogStatus($"Script path: {scriptPath}");
+                Log.Info($"Perl executable: {perlExecutable}");
+                Log.Info($"Script path: {scriptPath}");
 
                 // Create a new process to execute the Perl script
                 Process perlProcess = new Process();
@@ -1151,34 +1153,34 @@ namespace OR10N.ViewModel
                 perlProcess.StartInfo.UseShellExecute = false;
                 perlProcess.StartInfo.CreateNoWindow = true;
 
-                MainViewModel.Instance.LogStatus("Starting Perl process...");
+                Log.Info("Starting Perl process...");
 
                 // Start the Perl script and capture the output
                 perlProcess.Start();
                 string output = perlProcess.StandardOutput.ReadToEnd();
                 perlProcess.WaitForExit();
-                MainViewModel.Instance.LogStatus("Perl process completed. Output captured.");
+                Log.Info("Perl process completed. Output captured.");
 
                 // Process the output in C#
                 ParsePerlSubroutines(output);
-                MainViewModel.Instance.LogStatus("Perl subroutine parsing completed.");
+                Log.Info("Perl subroutine parsing completed.");
             }
             catch (Exception ex)
             {
-                MainViewModel.Instance.LogStatus($"Error in ImportPerlFile: {ex.Message}");
+                Log.Info($"Error in ImportPerlFile: {ex.Message}");
             }
         }
 
         // Method to parse the Perl script output (example)
         private void ParsePerlSubroutines(string output)
         {
-            MainViewModel.Instance.LogStatus("Parsing Perl subroutines from output...");
+            Log.Info("Parsing Perl subroutines from output...");
             try
             {
                 // Here, you will split and parse the output from the Perl script
                 // Assuming the output format is a list of subroutine names and bodies
                 var subroutines = output.Split(new string[] { "Subroutine:" }, StringSplitOptions.RemoveEmptyEntries);
-                MainViewModel.Instance.LogStatus($"Found {subroutines.Length} subroutines.");
+                Log.Info($"Found {subroutines.Length} subroutines.");
 
                 foreach (var sub in subroutines)
                 {
@@ -1186,33 +1188,33 @@ namespace OR10N.ViewModel
                     var name = lines[0].Trim();  // Subroutine name
                     var body = string.Join("\n", lines.Skip(1));  // Subroutine body
 
-                    MainViewModel.Instance.LogStatus($"Parsing subroutine: {name}");
+                    Log.Info($"Parsing subroutine: {name}");
 
                     // Create a new node in the flowchart for each subroutine
                     AddParsedNode(name, "Subroutine", body);
-                    MainViewModel.Instance.LogStatus($"Subroutine '{name}' added as a node.");
+                    Log.Info($"Subroutine '{name}' added as a node.");
                 }
             }
             catch (Exception ex)
             {
-                MainViewModel.Instance.LogStatus($"Error while parsing Perl subroutines: {ex.Message}");
+                Log.Info($"Error while parsing Perl subroutines: {ex.Message}");
             }
         }
 
         // Finds children of a specific type in a visual tree
         public static IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj) where T : DependencyObject
         {
-            MainViewModel.Instance.LogStatus($"Finding visual children of type: {typeof(T).Name}");
+            Log.Info($"Finding visual children of type: {typeof(T).Name}");
             if (depObj != null)
             {
                 for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
                 {
                     DependencyObject child = VisualTreeHelper.GetChild(depObj, i);
-                    MainViewModel.Instance.LogStatus($"Inspecting child at index {i}: {child?.GetType().Name ?? "null"}");
+                    Log.Info($"Inspecting child at index {i}: {child?.GetType().Name ?? "null"}");
 
                     if (child != null && child is T)
                     {
-                        MainViewModel.Instance.LogStatus($"Found child of type {typeof(T).Name}");
+                        Log.Info($"Found child of type {typeof(T).Name}");
                         yield return (T)child;
                     }
 
@@ -1234,37 +1236,37 @@ namespace OR10N.ViewModel
         // Method to delete selected nodes with logging
         public void DeleteSelectedNodes(NodeViewModel node)
         {
-            MainViewModel.Instance.LogStatus($"Attempting to delete selected node: {node?.NodeName ?? "Unknown"}");
+            Log.Info($"Attempting to delete selected node: {node?.NodeName ?? "Unknown"}");
             try
             {
                 if (node != null)
                 {
-                    MainViewModel.Instance.LogStatus($"Disconnecting all connectors for node: {node.NodeName}");
+                    Log.Info($"Disconnecting all connectors for node: {node.NodeName}");
                     node.DisconnectAllConnectors();
                     Nodes.Remove(node);
-                    MainViewModel.Instance.LogStatus($"Node '{node.NodeName}' removed from the collection.");
+                    Log.Info($"Node '{node.NodeName}' removed from the collection.");
                 }
                 else
                 {
-                    MainViewModel.Instance.LogStatus("No node selected for deletion.");
+                    Log.Info("No node selected for deletion.");
                 }
             }
             catch (Exception ex)
             {
-                MainViewModel.Instance.LogStatus($"Error while deleting node: {ex.Message}");
+                Log.Info($"Error while deleting node: {ex.Message}");
             }
         }
 
 
         public Connector GetInConnectorBasedOnNode(int nodeID)
         {
-            MainViewModel.Instance.LogStatus($"Attempting to find InConnector for node with ID: {nodeID}");
+            Log.Info($"Attempting to find InConnector for node with ID: {nodeID}");
 
             NodeViewModel node = GetNodeByID(nodeID);
 
             if (node == null)
             {
-                MainViewModel.Instance.LogStatus($"No node found with ID: {nodeID}. Returning null for InConnector.");
+                Log.Info($"No node found with ID: {nodeID}. Returning null for InConnector.");
                 return null;
             }
 
@@ -1272,21 +1274,21 @@ namespace OR10N.ViewModel
             {
                 if (node is DynamicNode dyn)
                 {
-                    MainViewModel.Instance.LogStatus($"Node with ID: {nodeID} is a DynamicNode. Returning InConnector.");
+                    Log.Info($"Node with ID: {nodeID} is a DynamicNode. Returning InConnector.");
                     return dyn.InConnector;
                 }
 
                 if (node is ConditionNode con)
                 {
-                    MainViewModel.Instance.LogStatus($"Node with ID: {nodeID} is a ConditionNode. Returning InExecutionConnector.");
+                    Log.Info($"Node with ID: {nodeID} is a ConditionNode. Returning InExecutionConnector.");
                     return con.InExecutionConnector;
                 }
 
-                MainViewModel.Instance.LogStatus($"Node with ID: {nodeID} is not a recognized type for InConnector. Returning null.");
+                Log.Info($"Node with ID: {nodeID} is not a recognized type for InConnector. Returning null.");
             }
             catch (Exception ex)
             {
-                MainViewModel.Instance.LogStatus($"Error while retrieving InConnector for node with ID: {nodeID}: {ex.Message}");
+                Log.Info($"Error while retrieving InConnector for node with ID: {nodeID}: {ex.Message}");
             }
 
             return null;
@@ -1294,13 +1296,13 @@ namespace OR10N.ViewModel
 
         public Connector GetOutConnectorBasedOnNode(int nodeID)
         {
-            MainViewModel.Instance.LogStatus($"Attempting to find OutConnector for node with ID: {nodeID}");
+            Log.Info($"Attempting to find OutConnector for node with ID: {nodeID}");
 
             NodeViewModel node = GetNodeByID(nodeID);
 
             if (node == null)
             {
-                MainViewModel.Instance.LogStatus($"No node found with ID: {nodeID}. Returning null for OutConnector.");
+                Log.Info($"No node found with ID: {nodeID}. Returning null for OutConnector.");
                 return null;
             }
 
@@ -1308,27 +1310,27 @@ namespace OR10N.ViewModel
             {
                 if (node is RootNode root)
                 {
-                    MainViewModel.Instance.LogStatus($"Node with ID: {nodeID} is a RootNode. Returning OutputConnector.");
+                    Log.Info($"Node with ID: {nodeID} is a RootNode. Returning OutputConnector.");
                     return root.OutputConnector;
                 }
 
                 if (node is DynamicNode dyn)
                 {
-                    MainViewModel.Instance.LogStatus($"Node with ID: {nodeID} is a DynamicNode. Returning OutConnector.");
+                    Log.Info($"Node with ID: {nodeID} is a DynamicNode. Returning OutConnector.");
                     return dyn.OutConnector;
                 }
 
                 if (node is VariableNode varNode)
                 {
-                    MainViewModel.Instance.LogStatus($"Node with ID: {nodeID} is a VariableNode. Returning NodeParameterOut.");
+                    Log.Info($"Node with ID: {nodeID} is a VariableNode. Returning NodeParameterOut.");
                     return varNode.NodeParameterOut;
                 }
 
-                MainViewModel.Instance.LogStatus($"Node with ID: {nodeID} is not a recognized type for OutConnector. Returning null.");
+                Log.Info($"Node with ID: {nodeID} is not a recognized type for OutConnector. Returning null.");
             }
             catch (Exception ex)
             {
-                MainViewModel.Instance.LogStatus($"Error while retrieving OutConnector for node with ID: {nodeID}: {ex.Message}");
+                Log.Info($"Error while retrieving OutConnector for node with ID: {nodeID}: {ex.Message}");
             }
 
             return null;
@@ -1336,7 +1338,7 @@ namespace OR10N.ViewModel
 
         public NodeViewModel GetNodeByID(int nodeID)
         {
-            MainViewModel.Instance.LogStatus($"Searching for node with ID: {nodeID}.");
+            Log.Info($"Searching for node with ID: {nodeID}.");
 
             try
             {
@@ -1346,15 +1348,15 @@ namespace OR10N.ViewModel
 
                 if (node.Count() == 1)
                 {
-                    MainViewModel.Instance.LogStatus($"Node with ID: {nodeID} found. Returning the node.");
+                    Log.Info($"Node with ID: {nodeID} found. Returning the node.");
                     return node.First();
                 }
 
-                MainViewModel.Instance.LogStatus($"No unique node found with ID: {nodeID}. Found {node.Count()} matches. Returning null.");
+                Log.Info($"No unique node found with ID: {nodeID}. Found {node.Count()} matches. Returning null.");
             }
             catch (Exception ex)
             {
-                MainViewModel.Instance.LogStatus($"Error while searching for node with ID: {nodeID}: {ex.Message}");
+                Log.Info($"Error while searching for node with ID: {nodeID}: {ex.Message}");
             }
 
             return null;
@@ -1363,100 +1365,100 @@ namespace OR10N.ViewModel
 
         public NetworkViewModel(MainViewModel mainViewModel)
 {
-    MainViewModel.Instance.LogStatus("Initializing NetworkViewModel...");
+    Log.Info("Initializing NetworkViewModel...");
 
     try
     {
         AddedNodesOrder = new List<NodeViewModel>();
         RemovedNodesOrder = new List<NodeViewModel>();
         Nodes = new ObservableCollection<NodeViewModel>();
-        MainViewModel.Instance.LogStatus("Node lists initialized.");
+        Log.Info("Node lists initialized.");
 
         // Initialize Undo/Redo commands
-        MainViewModel.Instance.LogStatus("Setting up Undo/Redo commands...");
+        Log.Info("Setting up Undo/Redo commands...");
         UndoCommand = new RelayCommand(Undo, CanUndo);
         RedoCommand = new RelayCommand(Redo, CanRedo);
-        MainViewModel.Instance.LogStatus("Undo/Redo commands initialized.");
+        Log.Info("Undo/Redo commands initialized.");
 
         // Correctly instantiate NodeFactory with the MainViewModel singleton instance
         nodeFactory = new NodeFactory(MainViewModel.Instance);
         this.mainViewModel = mainViewModel;
-        MainViewModel.Instance.LogStatus("NodeFactory initialized and MainViewModel instance assigned.");
+        Log.Info("NodeFactory initialized and MainViewModel instance assigned.");
 
-        MainViewModel.Instance.LogStatus("NetworkViewModel initialized successfully.");
+        Log.Info("NetworkViewModel initialized successfully.");
     }
     catch (Exception ex)
     {
-        MainViewModel.Instance.LogStatus($"Error during NetworkViewModel initialization: {ex.Message}");
+        Log.Info($"Error during NetworkViewModel initialization: {ex.Message}");
     }
 }
 
 // Add a new undoable action to the stack
 public void AddUndoableAction(UndoableAction action)
 {
-    MainViewModel.Instance.LogStatus("Adding a new undoable action...");
+    Log.Info("Adding a new undoable action...");
     try
     {
         undoStack.Push(action);
         redoStack.Clear();  // Clear redo stack when new action is added
         RefreshCommandStates();
-        MainViewModel.Instance.LogStatus("Undoable action added successfully and redo stack cleared.");
+        Log.Info("Undoable action added successfully and redo stack cleared.");
     }
     catch (Exception ex)
     {
-        MainViewModel.Instance.LogStatus($"Error while adding undoable action: {ex.Message}");
+        Log.Info($"Error while adding undoable action: {ex.Message}");
     }
 }
 
 // Perform Undo
 private void Undo()
 {
-    MainViewModel.Instance.LogStatus("Attempting to perform Undo...");
+    Log.Info("Attempting to perform Undo...");
     try
     {
         if (undoStack.Any())
         {
             var action = undoStack.Pop();
-            MainViewModel.Instance.LogStatus("Undo action found, executing Undo...");
+            Log.Info("Undo action found, executing Undo...");
             action.Undo();
             redoStack.Push(action);
-            MainViewModel.Instance.LogStatus("Undo executed successfully and action pushed to redo stack.");
+            Log.Info("Undo executed successfully and action pushed to redo stack.");
             RefreshCommandStates();
         }
         else
         {
-            MainViewModel.Instance.LogStatus("No actions available to undo.");
+            Log.Info("No actions available to undo.");
         }
     }
     catch (Exception ex)
     {
-        MainViewModel.Instance.LogStatus($"Error during Undo operation: {ex.Message}");
+        Log.Info($"Error during Undo operation: {ex.Message}");
     }
 }
 
 // Perform Redo
 private void Redo()
 {
-    MainViewModel.Instance.LogStatus("Attempting to perform Redo...");
+    Log.Info("Attempting to perform Redo...");
     try
     {
         if (redoStack.Any())
         {
             var action = redoStack.Pop();
-            MainViewModel.Instance.LogStatus("Redo action found, executing Redo...");
+            Log.Info("Redo action found, executing Redo...");
             action.Execute();
             undoStack.Push(action);
-            MainViewModel.Instance.LogStatus("Redo executed successfully and action pushed to undo stack.");
+            Log.Info("Redo executed successfully and action pushed to undo stack.");
             RefreshCommandStates();
         }
         else
         {
-            MainViewModel.Instance.LogStatus("No actions available to redo.");
+            Log.Info("No actions available to redo.");
         }
     }
     catch (Exception ex)
     {
-        MainViewModel.Instance.LogStatus($"Error during Redo operation: {ex.Message}");
+        Log.Info($"Error during Redo operation: {ex.Message}");
     }
 }
 
@@ -1464,7 +1466,7 @@ private void Redo()
 private bool CanUndo()
 {
     bool canUndo = undoStack.Any();
-    MainViewModel.Instance.LogStatus($"CanUndo check: {canUndo}");
+    Log.Info($"CanUndo check: {canUndo}");
     return canUndo;
 }
 
@@ -1472,43 +1474,43 @@ private bool CanUndo()
 private bool CanRedo()
 {
     bool canRedo = redoStack.Any();
-    MainViewModel.Instance.LogStatus($"CanRedo check: {canRedo}");
+    Log.Info($"CanRedo check: {canRedo}");
     return canRedo;
 }
 
 private void RefreshCommandStates()
 {
-    MainViewModel.Instance.LogStatus("Refreshing command states for Undo/Redo...");
+    Log.Info("Refreshing command states for Undo/Redo...");
     try
     {
         UndoCommand.RaiseCanExecuteChanged();
         RedoCommand.RaiseCanExecuteChanged();
-        MainViewModel.Instance.LogStatus("Command states refreshed successfully.");
+        Log.Info("Command states refreshed successfully.");
     }
     catch (Exception ex)
     {
-        MainViewModel.Instance.LogStatus($"Error while refreshing command states: {ex.Message}");
+        Log.Info($"Error while refreshing command states: {ex.Message}");
     }
 }
 
 public void RemoveNode(NodeViewModel node)
 {
-    MainViewModel.Instance.LogStatus($"Attempting to remove node: {node?.NodeName ?? "Unknown"}");
+    Log.Info($"Attempting to remove node: {node?.NodeName ?? "Unknown"}");
     try
     {
         if (node != null && Nodes.Contains(node))
         {
             Nodes.Remove(node);
-            MainViewModel.Instance.LogStatus($"Node {node.NodeName} removed from the grid.");
+            Log.Info($"Node {node.NodeName} removed from the grid.");
         }
         else
         {
-            MainViewModel.Instance.LogStatus("Failed to remove node - node not found in the collection.");
+            Log.Info("Failed to remove node - node not found in the collection.");
         }
     }
     catch (Exception ex)
     {
-        MainViewModel.Instance.LogStatus($"Error while removing node: {ex.Message}");
+        Log.Info($"Error while removing node: {ex.Message}");
     }
 }
 
