@@ -27,21 +27,53 @@ namespace OR10N.Nodes
 
         public SetNode(MainViewModel mainViewModel) : base(mainViewModel)
         {
-            InitializeComponent();
+            MainViewModel.LogStatus("Initializing SetNode...");
+            try
+            {
+                InitializeComponent();
+                MainViewModel.LogStatus("Component initialized for SetNode.");
 
-            InExecutionConnector.ParentNode = (NodeViewModel)this;
-            OutExecutionConnector.ParentNode = (NodeViewModel)this;
+                InExecutionConnector.ParentNode = this;
+                OutExecutionConnector.ParentNode = this;
+                MainViewModel.LogStatus("ParentNode set for InExecutionConnector and OutExecutionConnector.");
 
-            this.InExecutionConnector.TypeOfInputOutput = InputOutputType.Input;
-            this.OutExecutionConnector.TypeOfInputOutput = InputOutputType.Output;
+                this.InExecutionConnector.TypeOfInputOutput = InputOutputType.Input;
+                this.OutExecutionConnector.TypeOfInputOutput = InputOutputType.Output;
+                MainViewModel.LogStatus("InputOutput types set for InExecutionConnector and OutExecutionConnector.");
 
-            this.NodeName = "Fire Trigger";
-            this.NodeDescription = "Fires the specified trigger, which the user can intercept in code";
+                this.NodeName = "Fire Trigger";
+                MainViewModel.LogStatus($"NodeName set to: {NodeName}");
+
+                this.NodeDescription = "Fires the specified trigger, which the user can intercept in code";
+                MainViewModel.LogStatus($"NodeDescription set to: {NodeDescription}");
+
+                DataContext = this;
+                MainViewModel.LogStatus("DataContext set for SetNode.");
+            }
+            catch (Exception ex)
+            {
+                MainViewModel.LogStatus($"Error during SetNode initialization: {ex.Message}", true);
+            }
+            MainViewModel.LogStatus("SetNode initialization completed.");
         }
 
         public override void Populate(SerializeableNodeViewModel node)
         {
-            throw new NotImplementedException();
+            MainViewModel.LogStatus($"Attempting to populate SetNode with data from SerializeableNodeViewModel: {node?.NodeName}");
+            try
+            {
+                throw new NotImplementedException();
+            }
+            catch (NotImplementedException)
+            {
+                MainViewModel.LogStatus("Populate method not implemented for SetNode. This will need to be implemented for proper functionality.", true);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                MainViewModel.LogStatus($"Error during SetNode population: {ex.Message}", true);
+            }
+            MainViewModel.LogStatus("SetNode population completed.");
         }
     }
 }

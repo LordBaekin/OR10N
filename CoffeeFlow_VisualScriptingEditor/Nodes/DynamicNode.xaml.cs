@@ -119,7 +119,7 @@ namespace OR10N.Nodes
 
         public void DisableInputOnParameter(int parameterIndex)
         {
-            if(UIInputControls.Count() > 0 && UIInputControls.Count() >= parameterIndex) 
+            if (UIInputControls.Count() > 0 && UIInputControls.Count() >= parameterIndex)
                 UIInputControls[parameterIndex].IsEnabled = false;
 
         }
@@ -132,18 +132,18 @@ namespace OR10N.Nodes
 
         }
 
-      
+
         public void AddArgument(string type, string argumentName, bool isExisting, int connectedToNodeID = 0, object argumentValue = null)
         {
             bool isUnknown = true;
-            if(type == "string")
+            if (type == "string")
             {
                 var mainVerticalListStackPanel = new StackPanel { Orientation = Orientation.Vertical, Margin = BottomMargin };
 
-                var stringHorizontalStackPanel = new StackPanel { Orientation = Orientation.Horizontal, Margin = BottomMargin};
+                var stringHorizontalStackPanel = new StackPanel { Orientation = Orientation.Horizontal, Margin = BottomMargin };
 
                 TextBox txtValueField = new TextBox { Text = "Some value here.", HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch, Width = 130, TextWrapping = TextWrapping.Wrap, Height = NumericBoxHeight };
-                Button PickLocalizationButton = new Button { Content = "LOC", Width = 30, Margin = new Thickness(3,0,0,0) };
+                Button PickLocalizationButton = new Button { Content = "LOC", Width = 30, Margin = new Thickness(3, 0, 0, 0) };
                 CheckBox checkLocalized = new CheckBox { IsChecked = false, Content = "Is Localization Tag", Margin = new Thickness(10, 0, 0, 0) };
 
                 PickLocalizationButton.Click += delegate (object sender, RoutedEventArgs e)
@@ -177,7 +177,7 @@ namespace OR10N.Nodes
 
                 //
                 Argument behind = new Argument(argumentName, type);
-                if(isExisting)
+                if (isExisting)
                 {
                     behind.ArgIsExistingVariable = true;
                     behind.ArgumentConnectedToNodeID = connectedToNodeID;
@@ -302,7 +302,7 @@ namespace OR10N.Nodes
                 argConnectors.Add(con);
 
                 stackPanel.Children.Add(con);
-                
+
                 stackPanel.Children.Add(new TextBlock { Text = argumentName + ":", Width = LabelWidth, HorizontalAlignment = System.Windows.HorizontalAlignment.Left, Foreground = new SolidColorBrush(Colors.White) });
                 CheckBox value = new CheckBox();
                 stackPanel.Children.Add(value);
@@ -327,7 +327,7 @@ namespace OR10N.Nodes
                 isUnknown = false;
             }
 
-            if(isUnknown)
+            if (isUnknown)
             {
                 var stackPanel = new StackPanel { Orientation = Orientation.Horizontal, Margin = BottomMargin, Height = NumericBoxHeight };
                 Connector con = new Connector() { Width = 15, TypeOfConnector = Base.ConnectorType.NodeParameter, ArgumentType = type, Height = 15, Margin = new Thickness(0, 0, 5, 0), ParentNode = this, HorizontalAlignment = System.Windows.HorizontalAlignment.Left, TypeOfInputOutput = InputOutputType.Input, OrderOfArgumentID = ArgumentCache.Count(), IsNoLinkedInputField = true };
@@ -336,7 +336,7 @@ namespace OR10N.Nodes
                 stackPanel.Children.Add(con);
                 stackPanel.Children.Add(new TextBlock { Text = argumentName + " (" + type + ")", Width = LabelWidth, HorizontalAlignment = System.Windows.HorizontalAlignment.Left, Foreground = new SolidColorBrush(Colors.White) });
                 ArgumentList.Children.Add(stackPanel);
-                
+
                 //Code-behind            
                 Argument behind = new Argument(argumentName, type);
                 behind.ArgValue = null;

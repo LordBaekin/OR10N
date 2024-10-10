@@ -396,7 +396,7 @@ namespace OR10N.Base
                     foreach (T childOfChild in FindVisualChildren<T>(child))
                     {
                         yield return childOfChild;
-                    }
+                    }   
                 }
             }
         }

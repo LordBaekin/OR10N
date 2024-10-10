@@ -339,6 +339,7 @@ namespace OR10N.ViewModel
                     LogStatus($"Added new trigger: {NewTriggerName}");
 
                     var undoAction = new UndoableAction(
+                        this,  // Pass the current MainViewModel instance
                         doAction: () => Triggers.Add(newTrigger),
                         undoAction: () => Triggers.Remove(newTrigger)
                     );
@@ -360,6 +361,7 @@ namespace OR10N.ViewModel
                 LogStatus($"Error while adding trigger: {ex.Message}");
             }
         }
+
 
 
 
@@ -900,7 +902,9 @@ namespace OR10N.ViewModel
                         LogStatus($"Removed variable node: {node.NodeName}");
                     }
 
+                    // Pass 'this' as the MainViewModel reference
                     var undoAction = new UndoableAction(
+                        this,  // Pass the reference to the MainViewModel
                         doAction: () => DeleteNodeFromNodeList(node),
                         undoAction: () => AddNodeToList(node)
                     );
@@ -921,6 +925,7 @@ namespace OR10N.ViewModel
                 LogStatus($"Error while deleting node: {ex.Message}");
             }
         }
+
 
 
 
